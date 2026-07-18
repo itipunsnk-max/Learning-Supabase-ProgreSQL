@@ -1,1 +1,1827 @@
-ด้านล่างเป็น **Master Prompt ภาษาไทยสำหรับสั่ง Codex** ให้สร้างคู่มือแบบครบวงจร พร้อมโครงสร้าง GitHub Repository และเว็บไซต์ที่ Deploy ไว้อ่านเองได้ โดยเน้นผู้เริ่มต้นด้าน Backend และสอนตั้งแต่พื้นฐานจนถึง Production-Ready CMMS :::writing{variant="document" id="57318"} # Master Prompt สำหรับ Codex ## สร้างคู่มือพัฒนา CMMS ด้วย Power Platform, PostgreSQL และ Supabase คุณทำหน้าที่เป็นผู้เชี่ยวชาญหลายบทบาทพร้อมกัน ได้แก่ - Senior Solution Architect - Senior Power Platform Consultant - Senior PostgreSQL Engineer - Senior Supabase Developer - Senior Power BI Developer - Senior Technical Writer - Senior Software Instructor - Senior DevOps Engineer - Senior UX/UI Designer สำหรับระบบงานภาคสนาม ภารกิจของคุณคือสร้าง **คู่มือการเรียนรู้และลงมือพัฒนาระบบ Maintenance Management System หรือ CMMS แบบครบวงจร** ตั้งแต่ระดับเริ่มต้นจนสามารถสร้างระบบใช้งานจริงได้ คู่มือนี้ต้องถูกจัดทำเป็นเว็บไซต์ Documentation ที่สามารถ: 1. เก็บ Source Code ไว้ใน GitHub 2. เปิดอ่านผ่าน GitHub Pages หรือระบบ Static Site Hosting 3. Deploy ผ่าน GitHub Pages, Netlify หรือ Vercel ได้ 4. ดาวน์โหลดเก็บไว้อ่านแบบ Offline ได้ 5. รองรับการอ่านบน Desktop, Tablet และ Mobile 6. มี Search, Navigation, Table of Contents และสารบัญแต่ละบท 7. มีตัวอย่าง Code ที่สามารถ Copy ไปใช้ได้จริง 8. มี Diagram, Flowchart, ER Diagram และ Architecture Diagram 9. มีแบบฝึกหัดและ Mini Project ทุก Phase 10. พาผู้เรียนสร้างระบบ CMMS จริงเป็น Final Project --- # 1. กลุ่มเป้าหมาย ออกแบบหลักสูตรสำหรับผู้เรียนที่มีพื้นฐานดังนี้ - เป็นวิศวกรไฟฟ้า - เข้าใจกระบวนการซ่อมบำรุงเบื้องต้น - ใช้งาน Excel ระดับ Intermediate - ใช้งาน Power BI ระดับ Intermediate - คุ้นเคยกับ Microsoft 365 - เคยใช้งาน SharePoint - เคยใช้งาน Power Apps เบื้องต้น - ยังไม่มีประสบการณ์ด้าน Backend Development - ยังไม่เข้าใจ Database Design เชิงลึก - ยังไม่เคยพัฒนา REST API - ยังไม่เคยใช้งาน PostgreSQL หรือ Supabase อย่างจริงจัง - ต้องการเรียนรู้แบบ Step-by-Step - ต้องการเห็น Use Case ที่เชื่อมโยงกับงานซ่อมบำรุงจริง เนื้อหาต้องอธิบายด้วยภาษาไทยเป็นหลัก และใช้ศัพท์ภาษาอังกฤษทางเทคนิคกำกับเมื่อเหมาะสม ตัวอย่าง: - ฐานข้อมูลเชิงสัมพันธ์ หรือ Relational Database - กุญแจหลัก หรือ Primary Key - กุญแจต่างประเทศ หรือ Foreign Key - การควบคุมสิทธิ์ระดับแถว หรือ Row Level Security - จุดเชื่อมต่อระบบ หรือ API Endpoint --- # 2. เป้าหมาย Final Project พัฒนาระบบแจ้งซ่อมและบริหารงานซ่อมบำรุง หรือ CMMS ที่รองรับคุณสมบัติต่อไปนี้ ## 2.1 Repair Request ผู้ใช้งานสามารถสร้างรายการแจ้งซ่อม โดยมีข้อมูลตัวอย่างดังนี้ - Ticket Number - วันที่และเวลาแจ้ง - ผู้แจ้ง - หน่วยงาน - สถานที่ - Functional Location - Asset - Equipment - ประเภทปัญหา - รายละเอียดอาการเสีย - ระดับความเร่งด่วน - ผลกระทบ - ผู้รับผิดชอบ - SLA - สถานะงาน - รูปภาพประกอบ - พิกัด Location ในกรณีใช้งานภาคสนาม ## 2.2 Work Order Tracking รองรับกระบวนการติดตาม Work Order เช่น - New - Submitted - Assigned - Accepted - In Progress - Waiting for Material - Waiting for Vendor - Waiting for Approval - Completed - Verified - Closed - Cancelled ต้องสามารถเก็บประวัติการเปลี่ยนสถานะ หรือ Status History ได้ ## 2.3 Asset Management ระบบต้องจัดเก็บข้อมูล Asset และ Equipment เช่น - Asset ID - Equipment Number - Asset Description - Asset Category - Manufacturer - Model - Serial Number - Installation Date - Warranty Expiry - Site - Location - Functional Location - Cost Center - Profit Center - Owner Department - Maintenance Strategy - Criticality - Current Status ## 2.4 Repair Photos ระบบต้องรองรับรูปภาพอย่างน้อยสามช่วง ได้แก่ 1. Before Repair Photos 2. During Repair Photos 3. After Repair Photos รูปภาพแต่ละไฟล์ต้องสามารถเก็บ Metadata เช่น - Ticket ID - Work Order ID - Photo Type - File Name - File Path - Uploaded By - Uploaded At - File Size - MIME Type - Caption - Latitude - Longitude ## 2.5 Mobile Upload รองรับการใช้งานบนโทรศัพท์มือถือสำหรับ - แจ้งซ่อม - ถ่ายรูปจากกล้อง - อัปโหลดรูป - บันทึกตำแหน่ง - ตรวจสอบสถานะงาน - อัปเดตผลการซ่อม - ตรวจรับงาน - ค้นหาประวัติ Asset ## 2.6 Search Repair History สามารถค้นหาประวัติได้จากข้อมูล เช่น - Ticket Number - Work Order Number - Asset ID - Equipment Number - Functional Location - Site - ผู้แจ้ง - ผู้รับผิดชอบ - Vendor - ประเภทปัญหา - วันที่แจ้ง - วันที่ปิดงาน - สถานะงาน ## 2.7 Dashboard สร้าง Dashboard สำหรับผู้ใช้งานหลายระดับ เช่น - Technician Dashboard - Supervisor Dashboard - Maintenance Manager Dashboard - Executive Dashboard ## 2.8 Power BI Integration เชื่อมต่อข้อมูลกับ Power BI เพื่อวิเคราะห์ตัวชี้วัด เช่น - จำนวนงานแจ้งซ่อม - จำนวนงานคงค้าง - Aging - SLA Compliance - Mean Time to Repair หรือ MTTR - Mean Time Between Failures หรือ MTBF - Response Time - Downtime - Repeat Failure - Cost by Asset - Cost by Site - Cost by Problem Category - Cost by Vendor - Top Failure Assets - Preventive versus Corrective Maintenance - Monthly Repair Trend - Work Order Backlog - Technician Workload --- # 3. Technology Stack และแผนการเรียนรู้ แบ่งหลักสูตรเป็น 8 Phase ภายในระยะเวลา 12 สัปดาห์ ## Phase 1: Power Apps, SharePoint และ Power Automate เนื้อหาต้องครอบคลุม: - แนวคิด CMMS - การวิเคราะห์ Business Process - การออกแบบ SharePoint List - Lookup Column - Choice Column - Person Column - Attachment - SharePoint Document Library - Power Apps Canvas App - Form - Gallery - Search - Filter - Patch - SubmitForm - EditForm - NewForm - Validation - Error Handling - Power Automate Approval - Notification - Email - Teams Notification - Ticket Number Generation - Status Workflow - การใช้งานผ่าน Mobile Mini Project: สร้างระบบแจ้งซ่อมเวอร์ชันแรกด้วย Power Apps, SharePoint และ Power Automate ## Phase 2: PostgreSQL Fundamentals และ Database Design เนื้อหาต้องครอบคลุม: - Database คืออะไร - Relational Database - Table - Row - Column - Data Type - Primary Key - Foreign Key - Unique Constraint - Check Constraint - Not Null - Default Value - One-to-One - One-to-Many - Many-to-Many - Normalization - First Normal Form - Second Normal Form - Third Normal Form - Index - View - Transaction - ACID - SQL พื้นฐาน - SELECT - INSERT - UPDATE - DELETE - JOIN - GROUP BY - ORDER BY - WHERE - CTE - Aggregate Functions Mini Project: ออกแบบฐานข้อมูล CMMS และสร้าง ER Diagram ## Phase 3: Supabase เนื้อหาต้องครอบคลุม: - Supabase Architecture - Supabase Project - PostgreSQL Database - Table Editor - SQL Editor - Relationships - Views - Functions - Triggers - Authentication - Users - Profiles - Roles - Row Level Security - Policy - anon role - authenticated role - service role - Environment Variables - Project URL - Anon Key - Service Role Key - Secret Management Mini Project: สร้างฐานข้อมูล CMMS บน Supabase พร้อม Authentication และ RLS ## Phase 4: Supabase Storage และ Image Management เนื้อหาต้องครอบคลุม: - Storage Bucket - Public Bucket - Private Bucket - Object Path - Folder Structure - Upload - Download - Signed URL - File Validation - MIME Type Validation - File Size Limit - File Naming - Image Compression - Image Resize - Thumbnail - Metadata - Access Policy - Storage RLS - Image Security - Exif Metadata - Mobile Upload - Retry Upload - Offline Considerations Mini Project: สร้างระบบอัปโหลดภาพ Before, During และ After Repair อย่างปลอดภัย ## Phase 5: REST API, JSON, Authentication และ API Testing เนื้อหาต้องครอบคลุม: - API คืออะไร - REST API - Endpoint - HTTP Method - GET - POST - PATCH - PUT - DELETE - HTTP Header - Request Body - Response Body - JSON - Status Code - Query Parameter - Path Parameter - Pagination - Filtering - Sorting - JWT - Access Token - Refresh Token - Bearer Token - Authentication - Authorization - CORS - API Key - Rate Limit - Postman - Bruno หรือเครื่องมือทดสอบ API แบบ Offline - Error Handling - Logging Mini Project: ทดสอบ Supabase REST API สำหรับ Ticket, Work Order, Asset และ Repair Photo ## Phase 6: Integrate Power Apps with Supabase เนื้อหาต้องครอบคลุม: - แนวทางเชื่อม Power Apps กับ Supabase - Custom Connector - REST API - Power Automate เป็น Integration Layer - JSON Parsing - Authentication - API Key Security - Environment Variable - Power Platform Solution - Connection Reference - Data Mapping - Pagination - Delegation - Error Handling - Retry Policy - Timeout - Synchronization - Conflict Handling - SharePoint-to-Supabase Migration - Hybrid Architecture - Offline Strategy Mini Project: ให้ Power Apps อ่านและเขียนข้อมูล Ticket และ Work Order ลง Supabase ต้องอธิบายอย่างชัดเจนว่า: - Power Apps ไม่ควรฝัง Service Role Key โดยตรง - Supabase Service Role Key ห้ามส่งไป Client - ควรใช้ Power Automate, Azure Function, Edge Function หรือ Backend Proxy เมื่อจำเป็น - กรณีใดใช้ Supabase anon key ได้ - กรณีใดต้องใช้ Row Level Security - กรณีใดควรสร้าง Custom API ## Phase 7: Production-Ready CMMS เนื้อหาต้องครอบคลุม: - Solution Architecture - Development Environment - Test Environment - Production Environment - Configuration Management - Environment Variables - Role-Based Access Control - Row Level Security - Audit Log - Status History - Data Validation - Error Handling - Logging - Monitoring - Backup - Restore - Disaster Recovery - Data Retention - File Retention - Security Review - Performance - Indexing - Pagination - Image Optimization - Caching - Testing - Unit Test - Integration Test - User Acceptance Test - Deployment Checklist - Rollback Plan - Change Management - User Training - Support Model - Documentation Mini Project: ปรับระบบ CMMS ให้พร้อมใช้งานใน Production ## Phase 8: Power BI Analytics เนื้อหาต้องครอบคลุม: - การเชื่อม Power BI กับ PostgreSQL หรือ Supabase - Import Mode - DirectQuery - Incremental Refresh - Gateway - Data Model - Star Schema - Fact Table - Dimension Table - Date Table - Asset Dimension - Site Dimension - Technician Dimension - Vendor Dimension - Problem Category Dimension - Work Order Fact - Repair Cost Fact - Downtime Fact - DAX - KPI - Drillthrough - Tooltip - Row Level Security ใน Power BI - Mobile Layout - Executive Dashboard Mini Project: สร้าง Power BI Dashboard สำหรับระบบ CMMS --- # 4. โครงสร้างหลักสูตร 12 สัปดาห์ สร้างหลักสูตรระยะเวลา 12 สัปดาห์ โดยจัดลำดับจาก Beginner ไป Advanced ต้องจัดทำตารางภาพรวมดังนี้ | สัปดาห์ | Phase | หัวข้อหลัก | Lab | Mini Project | ชั่วโมงโดยประมาณ | ผลลัพธ์ | |---|---|---|---|---|---:|---| แนะนำการกระจายเนื้อหาดังนี้ - สัปดาห์ 1–2: Phase 1 - สัปดาห์ 3–4: Phase 2 - สัปดาห์ 5: Phase 3 - สัปดาห์ 6: Phase 4 - สัปดาห์ 7: Phase 5 - สัปดาห์ 8–9: Phase 6 - สัปดาห์ 10–11: Phase 7 - สัปดาห์ 12: Phase 8 และ Final Project สามารถปรับการกระจายได้เมื่อมีเหตุผลทางด้าน Learning Progression แต่ต้องคงระยะเวลารวม 12 สัปดาห์ --- # 5. สิ่งที่ต้องมีในทุก Phase สำหรับทุก Phase ให้จัดทำรายละเอียดดังต่อไปนี้ ## 5.1 Learning Objectives ระบุว่าหลังเรียนจบ Phase นี้ ผู้เรียนสามารถทำอะไรได้บ้าง ใช้รูปแบบที่วัดผลได้ เช่น - สามารถออกแบบตารางฐานข้อมูลสำหรับ Ticket และ Work Order ได้ - สามารถสร้าง RLS Policy สำหรับ Technician และ Supervisor ได้ - สามารถทดสอบ REST API ผ่าน Postman ได้ - สามารถสร้าง Power Apps Form ที่บันทึกข้อมูลไปยัง Supabase ได้ ## 5.2 Concepts to Learn อธิบายแนวคิดสำคัญจากพื้นฐาน โดยไม่สมมติว่าผู้เรียนมีความรู้ Backend มาก่อน ทุกแนวคิดต้องประกอบด้วย - ความหมาย - ทำไมจึงต้องใช้ - ใช้ใน CMMS ตรงส่วนใด - ตัวอย่าง - ข้อดี - ข้อจำกัด - ข้อควรระวัง ## 5.3 Hands-on Exercises จัดทำแบบฝึกหัดแบบ Step-by-Step แต่ละแบบฝึกหัดต้องมี 1. เป้าหมาย 2. สิ่งที่ต้องเตรียม 3. ขั้นตอน 4. Code หรือ Formula 5. Expected Result 6. วิธีตรวจสอบผล 7. ปัญหาที่อาจพบ 8. วิธีแก้ไข 9. Challenge เพิ่มเติม ## 5.4 Mini Projects แต่ละ Phase ต้องมี Mini Project ที่ต่อยอดไปสู่ Final Project แต่ละ Mini Project ต้องระบุ - Requirement - User Story - Acceptance Criteria - Data Model - Workflow - Implementation Steps - Test Cases - Expected Output - Definition of Done ## 5.5 Recommended Architecture จัดทำ Architecture Diagram ด้วย Mermaid ตัวอย่างรูปแบบ: ```mermaid flowchart LR User[Mobile User] PowerApps[Power Apps] Flow[Power Automate] API[Integration API] Supabase[Supabase PostgreSQL] Storage[Supabase Storage] PowerBI[Power BI] User --> PowerApps PowerApps --> Flow Flow --> API API --> Supabase API --> Storage Supabase --> PowerBI ``` ต้องอธิบายหน้าที่ของแต่ละ Component และ Data Flow อย่างละเอียด ## 5.6 Real-World Examples ยก Use Case จากงานซ่อมบำรุงจริง เช่น - แจ้งซ่อมตู้ MDB - ซ่อม Circuit Breaker - ซ่อมปั๊มน้ำ - ซ่อมเครื่องปรับอากาศ - ซ่อมระบบไฟฟ้าส่องสว่าง - ซ่อมหม้อแปลง - ซ่อม Fuel Dispenser - ตรวจสอบอุปกรณ์ก่อนหมดประกัน - ติดตามงานผู้รับเหมา - ตรวจรับงานจากรูป Before และ After - วิเคราะห์ Asset ที่เสียซ้ำ - ติดตาม SLA งานเร่งด่วน แต่ละ Use Case ต้องแสดง - ผู้เกี่ยวข้อง - Trigger - Input - Process - Output - Business Rule - Exception - KPI ที่เกี่ยวข้อง ## 5.7 Estimated Learning Hours ระบุเวลาเรียนโดยประมาณ แยกเป็น - Theory - Demonstration - Hands-on Lab - Mini Project - Review ## 5.8 Common Mistakes ระบุข้อผิดพลาดที่ผู้เริ่มต้นมักทำ เช่น - ใช้ SharePoint List เดียวเก็บทุกอย่าง - เก็บรูปเป็น Base64 ในฐานข้อมูล - ไม่มี Foreign Key - ใช้ Text แทน Date - ใช้ Text แทน Numeric - ฝัง Secret Key ใน Power Apps - ปิด RLS เพื่อให้ระบบทำงานง่าย - ใช้ Service Role Key ใน Client - ไม่มี Status History - ลบข้อมูลจริงแทนการใช้ Soft Delete - ไม่มี Index - ดึงข้อมูลทั้งหมดโดยไม่มี Pagination - ไม่มี Validation - ไม่มี Audit Log - ใช้ Power BI ดึงข้อมูล Transaction จำนวนมากโดยไม่ออกแบบ Data Model ## 5.9 Best Practices ระบุแนวทางที่เหมาะสมสำหรับระบบ Production เช่น - ใช้ UUID เป็น Primary Key - แยก Ticket และ Work Order - แยก Asset Master ออกจาก Transaction - ใช้ Lookup Table สำหรับ Status และ Category - ใช้ Storage สำหรับรูปภาพ - เก็บเฉพาะ File Path และ Metadata ใน Database - ใช้ RLS ตาม User Role - ใช้ Audit Table - ใช้ Created At และ Updated At - ใช้ Soft Delete เมื่อเหมาะสม - ใช้ Index กับ Column ที่ใช้ค้นหาบ่อย - ใช้ Environment Variable - แยก Dev, Test และ Production - ใช้ Power Platform Solution - ใช้ Connection Reference - จัดทำ Backup และ Restore Test --- # 6. Database Design ที่ต้องสร้าง ออกแบบฐานข้อมูลอย่างน้อยให้มีตารางต่อไปนี้ - profiles - roles - user_roles - sites - locations - functional_locations - asset_categories - assets - equipment - repair_requests - work_orders - work_order_assignments - work_order_status_history - problem_categories - priorities - technicians - vendors - repair_photos - repair_comments - repair_costs - spare_parts - work_order_parts - downtime_records - sla_rules - notifications - audit_logs สำหรับทุก Table ให้ระบุ - Table Purpose - Column Name - Data Type - Primary Key - Foreign Key - Nullable - Default - Constraint - Index - ตัวอย่างข้อมูล - ความสัมพันธ์กับ Table อื่น สร้าง ER Diagram ด้วย Mermaid เช่น ```mermaid erDiagram PROFILES ||--o{ REPAIR_REQUESTS : creates SITES ||--o{ ASSETS : contains ASSETS ||--o{ REPAIR_REQUESTS : has REPAIR_REQUESTS ||--o| WORK_ORDERS : generates WORK_ORDERS ||--o{ REPAIR_PHOTOS : contains WORK_ORDERS ||--o{ WORK_ORDER_STATUS_HISTORY : tracks TECHNICIANS ||--o{ WORK_ORDER_ASSIGNMENTS : receives WORK_ORDERS ||--o{ WORK_ORDER_ASSIGNMENTS : has ``` สร้าง SQL Migration Script ให้พร้อมใช้งานจริง โดยจัดเก็บในโฟลเดอร์: ```text database/ ├── migrations/ ├── seed/ ├── views/ ├── functions/ ├── triggers/ ├── policies/ └── tests/ ``` SQL ต้องมี Comment อธิบายแต่ละส่วน --- # 7. Row Level Security Design ออกแบบ User Role อย่างน้อยดังนี้ - Requester - Technician - Supervisor - Maintenance Manager - Administrator - Executive - Vendor กำหนดสิทธิ์ตัวอย่างดังนี้ ## Requester - สร้าง Ticket ได้ - ดู Ticket ของตนเองได้ - เพิ่ม Comment ใน Ticket ของตนเองได้ - ดูสถานะงานของตนเองได้ - ไม่สามารถแก้ไข Work Order ได้ ## Technician - ดู Work Order ที่มอบหมายให้ตนเองได้ - อัปเดตสถานะงานได้ - เพิ่มรูป During และ After Repair ได้ - บันทึกผลการซ่อมได้ - บันทึกอะไหล่และเวลาทำงานได้ ## Supervisor - ดู Work Order ภายใน Site หรือหน่วยงานของตนเองได้ - Assign Technician ได้ - เปลี่ยน Priority ได้ - ตรวจสอบและปิดงานได้ ## Maintenance Manager - ดูข้อมูลทุก Site ที่รับผิดชอบ - ดู Cost - ดู SLA - ดู Backlog - อนุมัติงานบางประเภทได้ ## Executive - อ่านข้อมูลสรุปและ Dashboard ได้ - ไม่สามารถแก้ไข Transaction ได้ ## Vendor - ดูเฉพาะ Work Order ที่มอบหมายให้ Vendor นั้น - อัปโหลดรูปและเอกสารได้ - ไม่สามารถดูข้อมูล Cost ภายในทั้งหมดได้ ## Administrator - จัดการ Master Data - จัดการ User และ Role - ตรวจสอบ Audit Log - จัดการ Configuration สร้าง RLS Policy ตัวอย่างพร้อมคำอธิบาย เช่น - SELECT Policy - INSERT Policy - UPDATE Policy - DELETE Policy - Storage Policy อธิบายความแตกต่างระหว่าง - Authentication - Authorization - Role-Based Access Control - Row Level Security --- # 8. Power Apps Application Design ออกแบบ Screen อย่างน้อยดังนี้ 1. Login/Profile Screen 2. Home Screen 3. My Repair Requests 4. Create Repair Request 5. Repair Request Detail 6. Work Order List 7. Work Order Detail 8. Technician Update Screen 9. Photo Upload Screen 10. Asset Search 11. Asset History 12. Supervisor Assignment 13. Approval Screen 14. Dashboard Summary 15. Settings สำหรับแต่ละ Screen ให้ระบุ - วัตถุประสงค์ - User Role ที่ใช้งาน - Controls - Data Source - Formula - Navigation - Validation - Error Handling - Mobile Layout - Expected Result แสดง Power Fx Formula ตัวอย่าง เช่น - Filter - Search - LookUp - Patch - Collect - ClearCollect - Concurrent - IfError - Notify - With - ForAll - JSON - ParseJSON ทุก Formula ต้องอธิบายทีละส่วน --- # 9. Power Automate Design สร้าง Flow ตัวอย่างอย่างน้อยดังนี้ 1. สร้าง Ticket Number 2. แจ้งเตือนเมื่อมี Ticket ใหม่ 3. มอบหมายงานให้ Technician 4. แจ้งเตือนใกล้เกิน SLA 5. แจ้งเตือนเมื่อเกิน SLA 6. ขออนุมัติปิดงาน 7. Sync SharePoint ไป Supabase 8. เรียก Supabase REST API 9. บันทึก Error Log 10. ส่ง Daily Backlog Summary สำหรับแต่ละ Flow ให้แสดง - Trigger - Actions - Conditions - Variables - Expression - Error Handling - Retry Policy - Timeout - Secure Inputs/Outputs - Expected Result --- # 10. API Integration Design สร้างตัวอย่าง API Request และ Response สำหรับ - Create Repair Request - Get Repair Requests - Get Repair Request by ID - Update Repair Request - Create Work Order - Assign Technician - Update Work Order Status - Upload Repair Photo - Search Asset - Get Asset Repair History - Get Dashboard Summary แสดงตัวอย่าง: - Endpoint - Method - Header - Authentication - Request JSON - Response JSON - HTTP Status Code - Error Response ตัวอย่างต้องใช้ข้อมูลจำลองที่สมจริง --- # 11. Image and File Architecture ออกแบบโครงสร้าง Supabase Storage เช่น ```text cmms-private/ ├── repair-requests/ │ └── {ticket_id}/ │ ├── before/ │ ├── during/ │ └── after/ ├── assets/ │ └── {asset_id}/ ├── work-orders/ │ └── {work_order_id}/ └── documents/ └── {work_order_id}/ ``` อธิบายเรื่องต่อไปนี้อย่างละเอียด - ทำไมไม่ควรเก็บ Image Binary ใน Database - Signed URL คืออะไร - Public URL กับ Signed URL ต่างกันอย่างไร - วิธีตั้งชื่อไฟล์ไม่ให้ชนกัน - วิธีตรวจสอบ MIME Type - วิธีจำกัดขนาดไฟล์ - วิธีบีบอัดภาพก่อน Upload - วิธีสร้าง Thumbnail - วิธีป้องกันผู้ใช้เข้าถึงรูปของผู้อื่น - วิธีลบรูปเมื่อ Ticket ถูกลบ - วิธีจัดการ Orphan Files - วิธีจัดการ Network หลุดระหว่าง Upload --- # 12. Power BI Data Model ออกแบบ Star Schema โดยมีตารางตัวอย่างดังนี้ ## Fact Tables - FactRepairRequests - FactWorkOrders - FactRepairCosts - FactDowntime - FactPartsUsage - FactStatusHistory ## Dimension Tables - DimDate - DimAsset - DimEquipment - DimSite - DimLocation - DimTechnician - DimVendor - DimProblemCategory - DimPriority - DimStatus สร้าง Diagram และอธิบาย Relationship สร้าง DAX Measure ตัวอย่าง เช่น - Total Repair Requests - Open Work Orders - Closed Work Orders - Backlog - Average Response Time - Average Repair Time - SLA Compliance % - MTTR - MTBF - Repeat Failure Rate - Total Repair Cost - Average Cost per Work Order - Downtime Hours - Top Failed Assets - Work Orders per Technician - Before versus After Repair Count - Aging 0–7 Days - Aging 8–14 Days - Aging 15–30 Days - Aging Over 30 Days ทุก Measure ต้องมี - DAX Code - คำอธิบาย - Filter Context - ตัวอย่างผลลัพธ์ - ข้อควรระวัง --- # 13. Final Project Requirements สร้าง Final Project แบบ End-to-End โดยให้ผู้เรียนพัฒนาระบบตามลำดับดังนี้ 1. วิเคราะห์ Requirement 2. สร้าง User Story 3. กำหนด Role 4. ออกแบบ Workflow 5. ออกแบบ ER Diagram 6. สร้าง PostgreSQL Database 7. สร้าง Supabase Project 8. สร้าง Tables และ Relationships 9. สร้าง Authentication 10. สร้าง RLS 11. สร้าง Storage 12. สร้าง API Test 13. สร้าง Power Apps 14. สร้าง Power Automate 15. เชื่อม Power Apps กับ Supabase 16. ทดสอบระบบ 17. สร้าง Power BI Dashboard 18. จัดทำ Deployment 19. จัดทำ User Manual 20. จัดทำ Admin Manual 21. จัดทำ Backup and Restore Guide 22. จัดทำ Production Checklist Final Project ต้องมีเอกสารดังนี้ - Business Requirement Document - Functional Requirement - Non-Functional Requirement - User Stories - Acceptance Criteria - Architecture Diagram - Data Flow Diagram - ER Diagram - Data Dictionary - API Specification - Security Design - RLS Matrix - Test Plan - Test Cases - UAT Checklist - Deployment Guide - Rollback Guide - User Manual - Administrator Manual - Troubleshooting Guide --- # 14. GitHub Repository Structure สร้าง Repository ตามโครงสร้างตัวอย่างดังนี้ ```text cmms-learning-roadmap/ ├── README.md ├── LICENSE ├── CONTRIBUTING.md ├── CHANGELOG.md ├── SECURITY.md ├── CODE_OF_CONDUCT.md ├── package.json ├── docs/ │ ├── index.md │ ├── introduction/ │ ├── week-01/ │ ├── week-02/ │ ├── week-03/ │ ├── week-04/ │ ├── week-05/ │ ├── week-06/ │ ├── week-07/ │ ├── week-08/ │ ├── week-09/ │ ├── week-10/ │ ├── week-11/ │ ├── week-12/ │ ├── architecture/ │ ├── database/ │ ├── supabase/ │ ├── power-apps/ │ ├── power-automate/ │ ├── power-bi/ │ ├── api/ │ ├── security/ │ ├── deployment/ │ ├── troubleshooting/ │ └── glossary/ ├── database/ │ ├── migrations/ │ ├── seed/ │ ├── views/ │ ├── functions/ │ ├── triggers/ │ ├── policies/ │ └── tests/ ├── api/ │ ├── examples/ │ ├── postman/ │ └── schemas/ ├── power-apps/ │ ├── screens/ │ ├── formulas/ │ ├── components/ │ └── custom-connector/ ├── power-automate/ │ ├── flows/ │ └── expressions/ ├── power-bi/ │ ├── data-model/ │ ├── dax/ │ └── power-query/ ├── diagrams/ │ ├── architecture/ │ ├── er-diagram/ │ ├── workflows/ │ └── data-flow/ ├── sample-data/ ├── exercises/ ├── solutions/ ├── assets/ │ ├── images/ │ └── icons/ └── .github/ ├── workflows/ ├── ISSUE_TEMPLATE/ └── PULL_REQUEST_TEMPLATE.md ``` สร้าง README.md ที่มีเนื้อหาอย่างน้อยดังนี้ - Project Overview - Target Learner - Learning Outcomes - Curriculum Overview - Technology Stack - 12-Week Roadmap - Repository Structure - Getting Started - Prerequisites - Installation - Running Locally - Deploying - Offline Reading - Final Project - Contribution - License - Disclaimer --- # 15. Documentation Website เลือกใช้ Documentation Framework ที่เหมาะสำหรับผู้เริ่มต้นและใช้งานแบบ Offline ได้ พิจารณาตัวเลือก: - VitePress - Docusaurus - MkDocs Material ให้เลือกหนึ่งตัวเลือกเป็น Default พร้อมอธิบายเหตุผล ข้อกำหนด: - ติดตั้งง่าย - เปิด Local ได้ - Deploy GitHub Pages ได้ - มี Search - มี Sidebar - มี Table of Contents - รองรับ Mermaid - รองรับ Code Highlighting - Responsive - รองรับภาษาไทย - Build เป็น Static Files ได้ - ดาวน์โหลดเก็บไว้อ่าน Offline ได้ ให้สร้างไฟล์ Configuration ที่ใช้งานได้จริง ตัวอย่างคำสั่งที่ต้องมี: ```bash npm install npm run dev npm run build npm run preview ``` หากเลือก MkDocs ให้ใช้คำสั่งที่เหมาะสมกับ Python แทน --- # 16. Deployment Guide จัดทำคู่มือ Deploy แบบ Step-by-Step สำหรับอย่างน้อยสามแนวทาง ## 16.1 GitHub Pages อธิบายตั้งแต่ 1. สร้าง Repository 2. Clone Repository 3. ติดตั้ง Dependencies 4. Run Local 5. Commit 6. Push 7. สร้าง GitHub Actions 8. เปิด GitHub Pages 9. ตรวจสอบ URL 10. แก้ปัญหา Base Path 11. แก้ปัญหา 404 12. อัปเดตเว็บไซต์ในอนาคต ## 16.2 Netlify อธิบาย - Import from GitHub - Build Command - Publish Directory - Environment Variable - Deploy Preview - Production Deploy ## 16.3 Vercel อธิบาย - Import Repository - Framework Detection - Build Settings - Environment Variables - Production Deployment - Redeploy สร้าง GitHub Actions Workflow ที่พร้อมใช้งานจริง --- # 17. Offline Reading เสนอวิธีอ่านแบบ Offline อย่างน้อยดังนี้ - Build Static Site แล้วเก็บโฟลเดอร์ dist - เปิดผ่าน Local HTTP Server - Export เอกสารเป็น PDF - ใช้ Progressive Web App เมื่อเหมาะสม - Save Repository ลงเครื่อง - เปิด Markdown ผ่าน VS Code - เปิดบน iPad หรือ iPhone - เก็บเอกสารใน OneDrive - นำ PDF เข้า OneNote หรือ GoodNotes อธิบายข้อจำกัดของการเปิดไฟล์ HTML โดยตรงด้วย `file://` สร้าง Script สำหรับเปิดเว็บไซต์ Local บน Windows เช่น ```bat @echo off cd /d "%~dp0" python -m http.server 8080 ``` และ PowerShell: ```powershell Set-Location $PSScriptRoot python -m http.server 8080 ``` --- # 18. รูปแบบการเขียนเนื้อหา ใช้ภาษาไทยที่อ่านง่าย แต่มีความถูกต้องทางเทคนิค ทุกบทต้องมีโครงสร้างดังนี้ ```markdown # ชื่อบท ## บทนี้จะได้เรียนรู้อะไร ## ปัญหาที่ต้องการแก้ ## แนวคิดพื้นฐาน ## Architecture ## Step-by-Step ## ตัวอย่าง Code ## Use Case จริง ## แบบฝึกหัด ## Mini Project ## Common Mistakes ## Best Practices ## Troubleshooting ## Checklist ## สรุป ## คำถามทบทวน ``` ข้อกำหนดเพิ่มเติม: - ห้ามอธิบายสั้นเกินไป - ห้ามให้เฉพาะหัวข้อโดยไม่มีเนื้อหา - Code ต้องใช้งานได้จริง - SQL ต้องมี Comment - Formula ต้องอธิบาย - Mermaid Diagram ต้อง Render ได้ - Table ต้องอ่านง่าย - มี Callout เช่น Note, Warning, Tip และ Danger - ระบุจุดที่เกี่ยวข้องกับ Security อย่างชัดเจน - แยก Development และ Production - ระบุข้อจำกัดของแต่ละ Technology - หลีกเลี่ยงการกล่าวอ้างว่าแนวทางเดียวเหมาะกับทุกองค์กร --- # 19. Use Case Catalog สร้างบทเฉพาะสำหรับ Use Case อย่างน้อย 15 กรณี ได้แก่ 1. แจ้งซ่อมอุปกรณ์ไฟฟ้า 2. แจ้งซ่อมผ่าน Mobile 3. ถ่ายรูป Before Repair 4. Assign Technician 5. Technician รับงาน 6. บันทึกผลการตรวจสอบ 7. รออะไหล่ 8. ส่งงานให้ Vendor 9. อัปโหลดรูป During Repair 10. อัปโหลดรูป After Repair 11. Supervisor ตรวจรับ 12. ปิด Work Order 13. ค้นหาประวัติ Asset 14. ตรวจสอบ Asset ที่เสียซ้ำ 15. วิเคราะห์ SLA และ Backlog 16. ตรวจสอบค่าใช้จ่ายตาม Site 17. ตรวจสอบงานตาม Technician 18. ตรวจสอบงานตาม Vendor 19. แจ้งเตือน Warranty ใกล้หมด 20. วิเคราะห์ MTTR และ MTBF ทุก Use Case ต้องมี - Actor - Preconditions - Trigger - Main Flow - Alternative Flow - Exception Flow - Business Rules - Data Used - Security - Acceptance Criteria - KPI --- # 20. Testing Requirements สร้าง Test Case ครอบคลุมอย่างน้อย - Create Ticket - Required Field Validation - Invalid Data Type - Duplicate Ticket - Unauthorized Access - Technician Assignment - Status Transition - Photo Upload - Invalid File Type - File Size Exceeded - Search - Pagination - RLS - API Authentication - Token Expired - Network Failure - Duplicate Submission - SLA Calculation - Work Order Closure - Power BI Refresh - Backup Restore จัดทำ Test Case Table เช่น | Test ID | Scenario | Preconditions | Steps | Expected Result | Actual Result | Status | |---|---|---|---|---|---|---| --- # 21. Security Requirements อธิบาย Security อย่างละเอียด โดยครอบคลุม - Principle of Least Privilege - Authentication - Authorization - RLS - JWT - Secret Management - API Key Management - Service Role Protection - Storage Security - Input Validation - SQL Injection - File Upload Security - Malware Consideration - Logging - Audit Trail - Session Expiration - Backup Encryption - HTTPS - CORS - Rate Limiting - Personal Data Protection - PDPA Considerations สร้าง Security Checklist สำหรับก่อนขึ้น Production --- # 22. Architecture Comparison สร้างตารางเปรียบเทียบอย่างน้อยสาม Architecture ## Architecture A Power Apps + SharePoint + Power Automate ## Architecture B Power Apps + Power Automate + Supabase ## Architecture C Custom Web/Mobile App + Supabase + Power BI เปรียบเทียบหัวข้อต่อไปนี้ - ความง่ายในการเริ่มต้น - ความเร็วในการพัฒนา - ค่าใช้จ่าย - Scalability - Security - Offline Support - File Management - Reporting - Integration - Vendor Lock-in - Maintenance Complexity - เหมาะกับจำนวนผู้ใช้ - เหมาะกับองค์กรประเภทใด สรุปว่า Architecture ใดเหมาะกับ - Prototype - Department-Level Application - Enterprise Production - Low-Budget Project - High-Security Project - Mobile Field Work --- # 23. Learning Assessment เมื่อจบแต่ละสัปดาห์ ให้มี - Knowledge Check - Quiz อย่างน้อย 10 ข้อ - Lab Checklist - Self-Assessment - Review Questions - Practical Assignment เมื่อจบ 12 สัปดาห์ ให้มี Capstone Assessment ประกอบด้วย - Architecture Review - Database Review - Security Review - Application Demo - API Test - Power BI Dashboard - Documentation Review - Production Readiness Checklist --- # 24. Glossary สร้าง Glossary ภาษาไทย–อังกฤษ สำหรับคำศัพท์สำคัญ เช่น - API - REST - JSON - Database - Table - Primary Key - Foreign Key - Constraint - Index - View - Trigger - Function - Authentication - Authorization - JWT - RLS - Storage Bucket - Signed URL - Environment Variable - SLA - MTTR - MTBF - Downtime - Work Order - Asset - Equipment - Functional Location - Audit Log - Soft Delete - Pagination --- # 25. วิธีดำเนินงานของ Codex ให้ดำเนินงานตามลำดับต่อไปนี้ ## ขั้นตอนที่ 1: วิเคราะห์และวางโครงสร้าง - วิเคราะห์ Requirement ทั้งหมด - สรุป Architecture - สร้าง Repository Structure - สร้าง Curriculum 12 สัปดาห์ - สร้างสารบัญทั้งหมด - ระบุ Dependencies ## ขั้นตอนที่ 2: สร้าง Documentation Framework - Initialize Project - ติดตั้ง Dependencies - ตั้งค่า Navigation - ตั้งค่า Sidebar - ตั้งค่า Mermaid - ตั้งค่า Search - ตั้งค่า Theme - ตั้งค่าภาษาไทย ## ขั้นตอนที่ 3: สร้างเนื้อหาหลัก - สร้างบทเรียนทุกสัปดาห์ - สร้าง Lab - สร้าง Mini Project - สร้าง Quiz - สร้าง Checklist - สร้าง Troubleshooting ## ขั้นตอนที่ 4: สร้าง Database Assets - ER Diagram - Data Dictionary - Migration - Seed Data - Functions - Triggers - RLS Policies - Test SQL ## ขั้นตอนที่ 5: สร้าง Integration Assets - API Examples - Postman Collection - Power Apps Formula - Power Automate Flow Design - Custom Connector Definition ## ขั้นตอนที่ 6: สร้าง Power BI Assets - Star Schema - Power Query - DAX Measures - Dashboard Specification - KPI Definition ## ขั้นตอนที่ 7: สร้าง Deployment - GitHub Actions - GitHub Pages - Netlify - Vercel - Local Offline Script ## ขั้นตอนที่ 8: ตรวจสอบคุณภาพ ตรวจสอบว่า - Link ไม่เสีย - Mermaid Render ได้ - Code Block ถูกต้อง - SQL Syntax ถูกต้อง - Sidebar ครบ - Build ผ่าน - Mobile Responsive - README ครบ - ไม่มี Secret ใน Repository - ไม่มี Service Role Key ใน Source Code - มี `.env.example` - มี `.gitignore` --- # 26. กฎการสร้างไฟล์ ห้ามสร้างเฉพาะ Outline หรือ Placeholder ห้ามใช้ข้อความลักษณะต่อไปนี้เป็นเนื้อหาหลัก: - TODO - Coming Soon - Add content here - To be completed - Placeholder ทุกไฟล์ที่สร้างต้องมีเนื้อหาที่ใช้งานได้จริง เมื่อเนื้อหามีจำนวนมาก ให้สร้างงานเป็นลำดับ Batch แต่ต้องรักษาโครงสร้างและสารบัญให้ต่อเนื่อง ทุกครั้งที่สร้างหรือแก้ไขไฟล์ ให้สรุป: 1. ไฟล์ที่สร้าง 2. ไฟล์ที่แก้ไข 3. เนื้อหาที่เพิ่ม 4. คำสั่งที่ต้อง Run 5. ผลการตรวจสอบ 6. งานส่วนถัดไป --- # 27. Definition of Done งานจะถือว่าเสร็จเมื่อมีองค์ประกอบครบดังนี้ - เว็บไซต์ Documentation เปิดใช้งาน Local ได้ - Build Production ผ่าน - Deploy GitHub Pages ได้ - มี Curriculum 12 สัปดาห์ครบ - มีบทเรียน Beginner ถึง Advanced - มี Phase 1–8 ครบ - มี Hands-on Lab ทุก Phase - มี Mini Project ทุก Phase - มี Final Project - มี Use Case อย่างน้อย 15 กรณี - มี ER Diagram - มี Architecture Diagram - มี Database Migration - มี Seed Data - มี RLS Policy - มี API Examples - มี Power Apps Formula - มี Power Automate Flow Design - มี Power BI Star Schema - มี DAX Measures - มี Security Checklist - มี Test Cases - มี Deployment Guide - มี Offline Guide - มี Troubleshooting Guide - มี Glossary - README.md สมบูรณ์ - ไม่มี Secret Key ใน GitHub - Repository พร้อมนำไปพัฒนาต่อ --- # 28. คำสั่งเริ่มต้น เริ่มดำเนินงานทันทีโดยทำตามลำดับนี้ 1. ตรวจสอบไฟล์และโครงสร้าง Repository ปัจจุบัน 2. สรุป Architecture ที่แนะนำ 3. เลือก Documentation Framework ที่เหมาะสม 4. สร้าง Repository Structure 5. สร้าง README.md 6. สร้าง Curriculum 12 สัปดาห์ 7. สร้างหน้า Introduction 8. สร้างบทเรียนสัปดาห์ที่ 1 9. สร้าง GitHub Pages Deployment 10. Run Build และแก้ Error จน Build ผ่าน ไม่ต้องถามยืนยันในแต่ละขั้นตอน หากพบข้อมูลที่ยังไม่ได้กำหนด ให้เลือกค่าที่เหมาะสมสำหรับระบบตัวอย่าง และบันทึกสมมติฐานไว้ในไฟล์: ```text docs/architecture/assumptions.md ``` หลังดำเนินงานแต่ละรอบ ให้รายงานผลในรูปแบบ: ```markdown ## สรุปการดำเนินงาน ### ไฟล์ที่สร้าง - ... ### ไฟล์ที่แก้ไข - ... ### คำสั่งที่ใช้ ```bash ... ``` ### ผลการตรวจสอบ - Development server: - Production build: - Broken links: - Mermaid: - Security check: ### งานที่ยังเหลือ - ... ``` เริ่มสร้างโครงการ CMMS Learning Roadmap และ Documentation Website ตาม Requirement ทั้งหมดนี้ทันที ::: Prompt นี้เหมาะสำหรับวางในไฟล์ `CODEX_MASTER_PROMPT.md` ที่ Root ของ Repository แล้วสั่ง Codex ให้อ่านไฟล์ดังกล่าวก่อนเริ่มงาน โดยในรอบแรกควรให้ Codexสร้างโครงสร้างเว็บไซต์, README, Curriculum 12 สัปดาห์ และ Deployment Workflow ก่อน จากนั้นจึงค่อยสร้างเนื้อหาแต่ละสัปดาห์เป็นรอบ ๆ เพื่อควบคุมคุณภาพและลดปัญหาไฟล์ไม่ครบ.
+# Master Prompt สำหรับ Codex
+## สร้างคู่มือพัฒนา CMMS ด้วย Power Platform, PostgreSQL และ Supabase
+
+คุณทำหน้าที่เป็นผู้เชี่ยวชาญหลายบทบาทพร้อมกัน ได้แก่
+
+- Senior Solution Architect
+- Senior Power Platform Consultant
+- Senior PostgreSQL Engineer
+- Senior Supabase Developer
+- Senior Power BI Developer
+- Senior Technical Writer
+- Senior Software Instructor
+- Senior DevOps Engineer
+- Senior UX/UI Designer สำหรับระบบงานภาคสนาม
+
+ภารกิจของคุณคือสร้าง **คู่มือการเรียนรู้และลงมือพัฒนาระบบ Maintenance Management System หรือ CMMS แบบครบวงจร** ตั้งแต่ระดับเริ่มต้นจนสามารถสร้างระบบใช้งานจริงได้
+
+คู่มือนี้ต้องถูกจัดทำเป็นเว็บไซต์ Documentation ที่สามารถ:
+
+1. เก็บ Source Code ไว้ใน GitHub
+2. เปิดอ่านผ่าน GitHub Pages หรือระบบ Static Site Hosting
+3. Deploy ผ่าน GitHub Pages, Netlify หรือ Vercel ได้
+4. ดาวน์โหลดเก็บไว้อ่านแบบ Offline ได้
+5. รองรับการอ่านบน Desktop, Tablet และ Mobile
+6. มี Search, Navigation, Table of Contents และสารบัญแต่ละบท
+7. มีตัวอย่าง Code ที่สามารถ Copy ไปใช้ได้จริง
+8. มี Diagram, Flowchart, ER Diagram และ Architecture Diagram
+9. มีแบบฝึกหัดและ Mini Project ทุก Phase
+10. พาผู้เรียนสร้างระบบ CMMS จริงเป็น Final Project
+
+---
+
+# 1. กลุ่มเป้าหมาย
+
+ออกแบบหลักสูตรสำหรับผู้เรียนที่มีพื้นฐานดังนี้
+
+- เป็นวิศวกรไฟฟ้า
+- เข้าใจกระบวนการซ่อมบำรุงเบื้องต้น
+- ใช้งาน Excel ระดับ Intermediate
+- ใช้งาน Power BI ระดับ Intermediate
+- คุ้นเคยกับ Microsoft 365
+- เคยใช้งาน SharePoint
+- เคยใช้งาน Power Apps เบื้องต้น
+- ยังไม่มีประสบการณ์ด้าน Backend Development
+- ยังไม่เข้าใจ Database Design เชิงลึก
+- ยังไม่เคยพัฒนา REST API
+- ยังไม่เคยใช้งาน PostgreSQL หรือ Supabase อย่างจริงจัง
+- ต้องการเรียนรู้แบบ Step-by-Step
+- ต้องการเห็น Use Case ที่เชื่อมโยงกับงานซ่อมบำรุงจริง
+
+เนื้อหาต้องอธิบายด้วยภาษาไทยเป็นหลัก และใช้ศัพท์ภาษาอังกฤษทางเทคนิคกำกับเมื่อเหมาะสม
+
+ตัวอย่าง:
+
+- ฐานข้อมูลเชิงสัมพันธ์ หรือ Relational Database
+- กุญแจหลัก หรือ Primary Key
+- กุญแจต่างประเทศ หรือ Foreign Key
+- การควบคุมสิทธิ์ระดับแถว หรือ Row Level Security
+- จุดเชื่อมต่อระบบ หรือ API Endpoint
+
+---
+
+# 2. เป้าหมาย Final Project
+
+พัฒนาระบบแจ้งซ่อมและบริหารงานซ่อมบำรุง หรือ CMMS ที่รองรับคุณสมบัติต่อไปนี้
+
+## 2.1 Repair Request
+
+ผู้ใช้งานสามารถสร้างรายการแจ้งซ่อม โดยมีข้อมูลตัวอย่างดังนี้
+
+- Ticket Number
+- วันที่และเวลาแจ้ง
+- ผู้แจ้ง
+- หน่วยงาน
+- สถานที่
+- Functional Location
+- Asset
+- Equipment
+- ประเภทปัญหา
+- รายละเอียดอาการเสีย
+- ระดับความเร่งด่วน
+- ผลกระทบ
+- ผู้รับผิดชอบ
+- SLA
+- สถานะงาน
+- รูปภาพประกอบ
+- พิกัด Location ในกรณีใช้งานภาคสนาม
+
+## 2.2 Work Order Tracking
+
+รองรับกระบวนการติดตาม Work Order เช่น
+
+- New
+- Submitted
+- Assigned
+- Accepted
+- In Progress
+- Waiting for Material
+- Waiting for Vendor
+- Waiting for Approval
+- Completed
+- Verified
+- Closed
+- Cancelled
+
+ต้องสามารถเก็บประวัติการเปลี่ยนสถานะ หรือ Status History ได้
+
+## 2.3 Asset Management
+
+ระบบต้องจัดเก็บข้อมูล Asset และ Equipment เช่น
+
+- Asset ID
+- Equipment Number
+- Asset Description
+- Asset Category
+- Manufacturer
+- Model
+- Serial Number
+- Installation Date
+- Warranty Expiry
+- Site
+- Location
+- Functional Location
+- Cost Center
+- Profit Center
+- Owner Department
+- Maintenance Strategy
+- Criticality
+- Current Status
+
+## 2.4 Repair Photos
+
+ระบบต้องรองรับรูปภาพอย่างน้อยสามช่วง ได้แก่
+
+1. Before Repair Photos
+2. During Repair Photos
+3. After Repair Photos
+
+รูปภาพแต่ละไฟล์ต้องสามารถเก็บ Metadata เช่น
+
+- Ticket ID
+- Work Order ID
+- Photo Type
+- File Name
+- File Path
+- Uploaded By
+- Uploaded At
+- File Size
+- MIME Type
+- Caption
+- Latitude
+- Longitude
+
+## 2.5 Mobile Upload
+
+รองรับการใช้งานบนโทรศัพท์มือถือสำหรับ
+
+- แจ้งซ่อม
+- ถ่ายรูปจากกล้อง
+- อัปโหลดรูป
+- บันทึกตำแหน่ง
+- ตรวจสอบสถานะงาน
+- อัปเดตผลการซ่อม
+- ตรวจรับงาน
+- ค้นหาประวัติ Asset
+
+## 2.6 Search Repair History
+
+สามารถค้นหาประวัติได้จากข้อมูล เช่น
+
+- Ticket Number
+- Work Order Number
+- Asset ID
+- Equipment Number
+- Functional Location
+- Site
+- ผู้แจ้ง
+- ผู้รับผิดชอบ
+- Vendor
+- ประเภทปัญหา
+- วันที่แจ้ง
+- วันที่ปิดงาน
+- สถานะงาน
+
+## 2.7 Dashboard
+
+สร้าง Dashboard สำหรับผู้ใช้งานหลายระดับ เช่น
+
+- Technician Dashboard
+- Supervisor Dashboard
+- Maintenance Manager Dashboard
+- Executive Dashboard
+
+## 2.8 Power BI Integration
+
+เชื่อมต่อข้อมูลกับ Power BI เพื่อวิเคราะห์ตัวชี้วัด เช่น
+
+- จำนวนงานแจ้งซ่อม
+- จำนวนงานคงค้าง
+- Aging
+- SLA Compliance
+- Mean Time to Repair หรือ MTTR
+- Mean Time Between Failures หรือ MTBF
+- Response Time
+- Downtime
+- Repeat Failure
+- Cost by Asset
+- Cost by Site
+- Cost by Problem Category
+- Cost by Vendor
+- Top Failure Assets
+- Preventive versus Corrective Maintenance
+- Monthly Repair Trend
+- Work Order Backlog
+- Technician Workload
+
+---
+
+# 3. Technology Stack และแผนการเรียนรู้
+
+แบ่งหลักสูตรเป็น 8 Phase ภายในระยะเวลา 12 สัปดาห์
+
+## Phase 1: Power Apps, SharePoint และ Power Automate
+
+เนื้อหาต้องครอบคลุม:
+
+- แนวคิด CMMS
+- การวิเคราะห์ Business Process
+- การออกแบบ SharePoint List
+- Lookup Column
+- Choice Column
+- Person Column
+- Attachment
+- SharePoint Document Library
+- Power Apps Canvas App
+- Form
+- Gallery
+- Search
+- Filter
+- Patch
+- SubmitForm
+- EditForm
+- NewForm
+- Validation
+- Error Handling
+- Power Automate Approval
+- Notification
+- Email
+- Teams Notification
+- Ticket Number Generation
+- Status Workflow
+- การใช้งานผ่าน Mobile
+
+Mini Project:
+
+สร้างระบบแจ้งซ่อมเวอร์ชันแรกด้วย Power Apps, SharePoint และ Power Automate
+
+## Phase 2: PostgreSQL Fundamentals และ Database Design
+
+เนื้อหาต้องครอบคลุม:
+
+- Database คืออะไร
+- Relational Database
+- Table
+- Row
+- Column
+- Data Type
+- Primary Key
+- Foreign Key
+- Unique Constraint
+- Check Constraint
+- Not Null
+- Default Value
+- One-to-One
+- One-to-Many
+- Many-to-Many
+- Normalization
+- First Normal Form
+- Second Normal Form
+- Third Normal Form
+- Index
+- View
+- Transaction
+- ACID
+- SQL พื้นฐาน
+- SELECT
+- INSERT
+- UPDATE
+- DELETE
+- JOIN
+- GROUP BY
+- ORDER BY
+- WHERE
+- CTE
+- Aggregate Functions
+
+Mini Project:
+
+ออกแบบฐานข้อมูล CMMS และสร้าง ER Diagram
+
+## Phase 3: Supabase
+
+เนื้อหาต้องครอบคลุม:
+
+- Supabase Architecture
+- Supabase Project
+- PostgreSQL Database
+- Table Editor
+- SQL Editor
+- Relationships
+- Views
+- Functions
+- Triggers
+- Authentication
+- Users
+- Profiles
+- Roles
+- Row Level Security
+- Policy
+- anon role
+- authenticated role
+- service role
+- Environment Variables
+- Project URL
+- Anon Key
+- Service Role Key
+- Secret Management
+
+Mini Project:
+
+สร้างฐานข้อมูล CMMS บน Supabase พร้อม Authentication และ RLS
+
+## Phase 4: Supabase Storage และ Image Management
+
+เนื้อหาต้องครอบคลุม:
+
+- Storage Bucket
+- Public Bucket
+- Private Bucket
+- Object Path
+- Folder Structure
+- Upload
+- Download
+- Signed URL
+- File Validation
+- MIME Type Validation
+- File Size Limit
+- File Naming
+- Image Compression
+- Image Resize
+- Thumbnail
+- Metadata
+- Access Policy
+- Storage RLS
+- Image Security
+- Exif Metadata
+- Mobile Upload
+- Retry Upload
+- Offline Considerations
+
+Mini Project:
+
+สร้างระบบอัปโหลดภาพ Before, During และ After Repair อย่างปลอดภัย
+
+## Phase 5: REST API, JSON, Authentication และ API Testing
+
+เนื้อหาต้องครอบคลุม:
+
+- API คืออะไร
+- REST API
+- Endpoint
+- HTTP Method
+- GET
+- POST
+- PATCH
+- PUT
+- DELETE
+- HTTP Header
+- Request Body
+- Response Body
+- JSON
+- Status Code
+- Query Parameter
+- Path Parameter
+- Pagination
+- Filtering
+- Sorting
+- JWT
+- Access Token
+- Refresh Token
+- Bearer Token
+- Authentication
+- Authorization
+- CORS
+- API Key
+- Rate Limit
+- Postman
+- Bruno หรือเครื่องมือทดสอบ API แบบ Offline
+- Error Handling
+- Logging
+
+Mini Project:
+
+ทดสอบ Supabase REST API สำหรับ Ticket, Work Order, Asset และ Repair Photo
+
+## Phase 6: Integrate Power Apps with Supabase
+
+เนื้อหาต้องครอบคลุม:
+
+- แนวทางเชื่อม Power Apps กับ Supabase
+- Custom Connector
+- REST API
+- Power Automate เป็น Integration Layer
+- JSON Parsing
+- Authentication
+- API Key Security
+- Environment Variable
+- Power Platform Solution
+- Connection Reference
+- Data Mapping
+- Pagination
+- Delegation
+- Error Handling
+- Retry Policy
+- Timeout
+- Synchronization
+- Conflict Handling
+- SharePoint-to-Supabase Migration
+- Hybrid Architecture
+- Offline Strategy
+
+Mini Project:
+
+ให้ Power Apps อ่านและเขียนข้อมูล Ticket และ Work Order ลง Supabase
+
+ต้องอธิบายอย่างชัดเจนว่า:
+
+- Power Apps ไม่ควรฝัง Service Role Key โดยตรง
+- Supabase Service Role Key ห้ามส่งไป Client
+- ควรใช้ Power Automate, Azure Function, Edge Function หรือ Backend Proxy เมื่อจำเป็น
+- กรณีใดใช้ Supabase anon key ได้
+- กรณีใดต้องใช้ Row Level Security
+- กรณีใดควรสร้าง Custom API
+
+## Phase 7: Production-Ready CMMS
+
+เนื้อหาต้องครอบคลุม:
+
+- Solution Architecture
+- Development Environment
+- Test Environment
+- Production Environment
+- Configuration Management
+- Environment Variables
+- Role-Based Access Control
+- Row Level Security
+- Audit Log
+- Status History
+- Data Validation
+- Error Handling
+- Logging
+- Monitoring
+- Backup
+- Restore
+- Disaster Recovery
+- Data Retention
+- File Retention
+- Security Review
+- Performance
+- Indexing
+- Pagination
+- Image Optimization
+- Caching
+- Testing
+- Unit Test
+- Integration Test
+- User Acceptance Test
+- Deployment Checklist
+- Rollback Plan
+- Change Management
+- User Training
+- Support Model
+- Documentation
+
+Mini Project:
+
+ปรับระบบ CMMS ให้พร้อมใช้งานใน Production
+
+## Phase 8: Power BI Analytics
+
+เนื้อหาต้องครอบคลุม:
+
+- การเชื่อม Power BI กับ PostgreSQL หรือ Supabase
+- Import Mode
+- DirectQuery
+- Incremental Refresh
+- Gateway
+- Data Model
+- Star Schema
+- Fact Table
+- Dimension Table
+- Date Table
+- Asset Dimension
+- Site Dimension
+- Technician Dimension
+- Vendor Dimension
+- Problem Category Dimension
+- Work Order Fact
+- Repair Cost Fact
+- Downtime Fact
+- DAX
+- KPI
+- Drillthrough
+- Tooltip
+- Row Level Security ใน Power BI
+- Mobile Layout
+- Executive Dashboard
+
+Mini Project:
+
+สร้าง Power BI Dashboard สำหรับระบบ CMMS
+
+---
+
+# 4. โครงสร้างหลักสูตร 12 สัปดาห์
+
+สร้างหลักสูตรระยะเวลา 12 สัปดาห์ โดยจัดลำดับจาก Beginner ไป Advanced
+
+ต้องจัดทำตารางภาพรวมดังนี้
+
+| สัปดาห์ | Phase | หัวข้อหลัก | Lab | Mini Project | ชั่วโมงโดยประมาณ | ผลลัพธ์ |
+|---|---|---|---|---|---:|---|
+
+แนะนำการกระจายเนื้อหาดังนี้
+
+- สัปดาห์ 1–2: Phase 1
+- สัปดาห์ 3–4: Phase 2
+- สัปดาห์ 5: Phase 3
+- สัปดาห์ 6: Phase 4
+- สัปดาห์ 7: Phase 5
+- สัปดาห์ 8–9: Phase 6
+- สัปดาห์ 10–11: Phase 7
+- สัปดาห์ 12: Phase 8 และ Final Project
+
+สามารถปรับการกระจายได้เมื่อมีเหตุผลทางด้าน Learning Progression แต่ต้องคงระยะเวลารวม 12 สัปดาห์
+
+---
+
+# 5. สิ่งที่ต้องมีในทุก Phase
+
+สำหรับทุก Phase ให้จัดทำรายละเอียดดังต่อไปนี้
+
+## 5.1 Learning Objectives
+
+ระบุว่าหลังเรียนจบ Phase นี้ ผู้เรียนสามารถทำอะไรได้บ้าง
+
+ใช้รูปแบบที่วัดผลได้ เช่น
+
+- สามารถออกแบบตารางฐานข้อมูลสำหรับ Ticket และ Work Order ได้
+- สามารถสร้าง RLS Policy สำหรับ Technician และ Supervisor ได้
+- สามารถทดสอบ REST API ผ่าน Postman ได้
+- สามารถสร้าง Power Apps Form ที่บันทึกข้อมูลไปยัง Supabase ได้
+
+## 5.2 Concepts to Learn
+
+อธิบายแนวคิดสำคัญจากพื้นฐาน โดยไม่สมมติว่าผู้เรียนมีความรู้ Backend มาก่อน
+
+ทุกแนวคิดต้องประกอบด้วย
+
+- ความหมาย
+- ทำไมจึงต้องใช้
+- ใช้ใน CMMS ตรงส่วนใด
+- ตัวอย่าง
+- ข้อดี
+- ข้อจำกัด
+- ข้อควรระวัง
+
+## 5.3 Hands-on Exercises
+
+จัดทำแบบฝึกหัดแบบ Step-by-Step
+
+แต่ละแบบฝึกหัดต้องมี
+
+1. เป้าหมาย
+2. สิ่งที่ต้องเตรียม
+3. ขั้นตอน
+4. Code หรือ Formula
+5. Expected Result
+6. วิธีตรวจสอบผล
+7. ปัญหาที่อาจพบ
+8. วิธีแก้ไข
+9. Challenge เพิ่มเติม
+
+## 5.4 Mini Projects
+
+แต่ละ Phase ต้องมี Mini Project ที่ต่อยอดไปสู่ Final Project
+
+แต่ละ Mini Project ต้องระบุ
+
+- Requirement
+- User Story
+- Acceptance Criteria
+- Data Model
+- Workflow
+- Implementation Steps
+- Test Cases
+- Expected Output
+- Definition of Done
+
+## 5.5 Recommended Architecture
+
+จัดทำ Architecture Diagram ด้วย Mermaid
+
+ตัวอย่างรูปแบบ:
+
+```mermaid
+flowchart LR
+    User[Mobile User]
+    PowerApps[Power Apps]
+    Flow[Power Automate]
+    API[Integration API]
+    Supabase[Supabase PostgreSQL]
+    Storage[Supabase Storage]
+    PowerBI[Power BI]
+
+    User --> PowerApps
+    PowerApps --> Flow
+    Flow --> API
+    API --> Supabase
+    API --> Storage
+    Supabase --> PowerBI
+```
+
+ต้องอธิบายหน้าที่ของแต่ละ Component และ Data Flow อย่างละเอียด
+
+## 5.6 Real-World Examples
+
+ยก Use Case จากงานซ่อมบำรุงจริง เช่น
+
+- แจ้งซ่อมตู้ MDB
+- ซ่อม Circuit Breaker
+- ซ่อมปั๊มน้ำ
+- ซ่อมเครื่องปรับอากาศ
+- ซ่อมระบบไฟฟ้าส่องสว่าง
+- ซ่อมหม้อแปลง
+- ซ่อม Fuel Dispenser
+- ตรวจสอบอุปกรณ์ก่อนหมดประกัน
+- ติดตามงานผู้รับเหมา
+- ตรวจรับงานจากรูป Before และ After
+- วิเคราะห์ Asset ที่เสียซ้ำ
+- ติดตาม SLA งานเร่งด่วน
+
+แต่ละ Use Case ต้องแสดง
+
+- ผู้เกี่ยวข้อง
+- Trigger
+- Input
+- Process
+- Output
+- Business Rule
+- Exception
+- KPI ที่เกี่ยวข้อง
+
+## 5.7 Estimated Learning Hours
+
+ระบุเวลาเรียนโดยประมาณ แยกเป็น
+
+- Theory
+- Demonstration
+- Hands-on Lab
+- Mini Project
+- Review
+
+## 5.8 Common Mistakes
+
+ระบุข้อผิดพลาดที่ผู้เริ่มต้นมักทำ เช่น
+
+- ใช้ SharePoint List เดียวเก็บทุกอย่าง
+- เก็บรูปเป็น Base64 ในฐานข้อมูล
+- ไม่มี Foreign Key
+- ใช้ Text แทน Date
+- ใช้ Text แทน Numeric
+- ฝัง Secret Key ใน Power Apps
+- ปิด RLS เพื่อให้ระบบทำงานง่าย
+- ใช้ Service Role Key ใน Client
+- ไม่มี Status History
+- ลบข้อมูลจริงแทนการใช้ Soft Delete
+- ไม่มี Index
+- ดึงข้อมูลทั้งหมดโดยไม่มี Pagination
+- ไม่มี Validation
+- ไม่มี Audit Log
+- ใช้ Power BI ดึงข้อมูล Transaction จำนวนมากโดยไม่ออกแบบ Data Model
+
+## 5.9 Best Practices
+
+ระบุแนวทางที่เหมาะสมสำหรับระบบ Production เช่น
+
+- ใช้ UUID เป็น Primary Key
+- แยก Ticket และ Work Order
+- แยก Asset Master ออกจาก Transaction
+- ใช้ Lookup Table สำหรับ Status และ Category
+- ใช้ Storage สำหรับรูปภาพ
+- เก็บเฉพาะ File Path และ Metadata ใน Database
+- ใช้ RLS ตาม User Role
+- ใช้ Audit Table
+- ใช้ Created At และ Updated At
+- ใช้ Soft Delete เมื่อเหมาะสม
+- ใช้ Index กับ Column ที่ใช้ค้นหาบ่อย
+- ใช้ Environment Variable
+- แยก Dev, Test และ Production
+- ใช้ Power Platform Solution
+- ใช้ Connection Reference
+- จัดทำ Backup และ Restore Test
+
+---
+
+# 6. Database Design ที่ต้องสร้าง
+
+ออกแบบฐานข้อมูลอย่างน้อยให้มีตารางต่อไปนี้
+
+- profiles
+- roles
+- user_roles
+- sites
+- locations
+- functional_locations
+- asset_categories
+- assets
+- equipment
+- repair_requests
+- work_orders
+- work_order_assignments
+- work_order_status_history
+- problem_categories
+- priorities
+- technicians
+- vendors
+- repair_photos
+- repair_comments
+- repair_costs
+- spare_parts
+- work_order_parts
+- downtime_records
+- sla_rules
+- notifications
+- audit_logs
+
+สำหรับทุก Table ให้ระบุ
+
+- Table Purpose
+- Column Name
+- Data Type
+- Primary Key
+- Foreign Key
+- Nullable
+- Default
+- Constraint
+- Index
+- ตัวอย่างข้อมูล
+- ความสัมพันธ์กับ Table อื่น
+
+สร้าง ER Diagram ด้วย Mermaid เช่น
+
+```mermaid
+erDiagram
+    PROFILES ||--o{ REPAIR_REQUESTS : creates
+    SITES ||--o{ ASSETS : contains
+    ASSETS ||--o{ REPAIR_REQUESTS : has
+    REPAIR_REQUESTS ||--o| WORK_ORDERS : generates
+    WORK_ORDERS ||--o{ REPAIR_PHOTOS : contains
+    WORK_ORDERS ||--o{ WORK_ORDER_STATUS_HISTORY : tracks
+    TECHNICIANS ||--o{ WORK_ORDER_ASSIGNMENTS : receives
+    WORK_ORDERS ||--o{ WORK_ORDER_ASSIGNMENTS : has
+```
+
+สร้าง SQL Migration Script ให้พร้อมใช้งานจริง โดยจัดเก็บในโฟลเดอร์:
+
+```text
+database/
+├── migrations/
+├── seed/
+├── views/
+├── functions/
+├── triggers/
+├── policies/
+└── tests/
+```
+
+SQL ต้องมี Comment อธิบายแต่ละส่วน
+
+---
+
+# 7. Row Level Security Design
+
+ออกแบบ User Role อย่างน้อยดังนี้
+
+- Requester
+- Technician
+- Supervisor
+- Maintenance Manager
+- Administrator
+- Executive
+- Vendor
+
+กำหนดสิทธิ์ตัวอย่างดังนี้
+
+## Requester
+
+- สร้าง Ticket ได้
+- ดู Ticket ของตนเองได้
+- เพิ่ม Comment ใน Ticket ของตนเองได้
+- ดูสถานะงานของตนเองได้
+- ไม่สามารถแก้ไข Work Order ได้
+
+## Technician
+
+- ดู Work Order ที่มอบหมายให้ตนเองได้
+- อัปเดตสถานะงานได้
+- เพิ่มรูป During และ After Repair ได้
+- บันทึกผลการซ่อมได้
+- บันทึกอะไหล่และเวลาทำงานได้
+
+## Supervisor
+
+- ดู Work Order ภายใน Site หรือหน่วยงานของตนเองได้
+- Assign Technician ได้
+- เปลี่ยน Priority ได้
+- ตรวจสอบและปิดงานได้
+
+## Maintenance Manager
+
+- ดูข้อมูลทุก Site ที่รับผิดชอบ
+- ดู Cost
+- ดู SLA
+- ดู Backlog
+- อนุมัติงานบางประเภทได้
+
+## Executive
+
+- อ่านข้อมูลสรุปและ Dashboard ได้
+- ไม่สามารถแก้ไข Transaction ได้
+
+## Vendor
+
+- ดูเฉพาะ Work Order ที่มอบหมายให้ Vendor นั้น
+- อัปโหลดรูปและเอกสารได้
+- ไม่สามารถดูข้อมูล Cost ภายในทั้งหมดได้
+
+## Administrator
+
+- จัดการ Master Data
+- จัดการ User และ Role
+- ตรวจสอบ Audit Log
+- จัดการ Configuration
+
+สร้าง RLS Policy ตัวอย่างพร้อมคำอธิบาย เช่น
+
+- SELECT Policy
+- INSERT Policy
+- UPDATE Policy
+- DELETE Policy
+- Storage Policy
+
+อธิบายความแตกต่างระหว่าง
+
+- Authentication
+- Authorization
+- Role-Based Access Control
+- Row Level Security
+
+---
+
+# 8. Power Apps Application Design
+
+ออกแบบ Screen อย่างน้อยดังนี้
+
+1. Login/Profile Screen
+2. Home Screen
+3. My Repair Requests
+4. Create Repair Request
+5. Repair Request Detail
+6. Work Order List
+7. Work Order Detail
+8. Technician Update Screen
+9. Photo Upload Screen
+10. Asset Search
+11. Asset History
+12. Supervisor Assignment
+13. Approval Screen
+14. Dashboard Summary
+15. Settings
+
+สำหรับแต่ละ Screen ให้ระบุ
+
+- วัตถุประสงค์
+- User Role ที่ใช้งาน
+- Controls
+- Data Source
+- Formula
+- Navigation
+- Validation
+- Error Handling
+- Mobile Layout
+- Expected Result
+
+แสดง Power Fx Formula ตัวอย่าง เช่น
+
+- Filter
+- Search
+- LookUp
+- Patch
+- Collect
+- ClearCollect
+- Concurrent
+- IfError
+- Notify
+- With
+- ForAll
+- JSON
+- ParseJSON
+
+ทุก Formula ต้องอธิบายทีละส่วน
+
+---
+
+# 9. Power Automate Design
+
+สร้าง Flow ตัวอย่างอย่างน้อยดังนี้
+
+1. สร้าง Ticket Number
+2. แจ้งเตือนเมื่อมี Ticket ใหม่
+3. มอบหมายงานให้ Technician
+4. แจ้งเตือนใกล้เกิน SLA
+5. แจ้งเตือนเมื่อเกิน SLA
+6. ขออนุมัติปิดงาน
+7. Sync SharePoint ไป Supabase
+8. เรียก Supabase REST API
+9. บันทึก Error Log
+10. ส่ง Daily Backlog Summary
+
+สำหรับแต่ละ Flow ให้แสดง
+
+- Trigger
+- Actions
+- Conditions
+- Variables
+- Expression
+- Error Handling
+- Retry Policy
+- Timeout
+- Secure Inputs/Outputs
+- Expected Result
+
+---
+
+# 10. API Integration Design
+
+สร้างตัวอย่าง API Request และ Response สำหรับ
+
+- Create Repair Request
+- Get Repair Requests
+- Get Repair Request by ID
+- Update Repair Request
+- Create Work Order
+- Assign Technician
+- Update Work Order Status
+- Upload Repair Photo
+- Search Asset
+- Get Asset Repair History
+- Get Dashboard Summary
+
+แสดงตัวอย่าง:
+
+- Endpoint
+- Method
+- Header
+- Authentication
+- Request JSON
+- Response JSON
+- HTTP Status Code
+- Error Response
+
+ตัวอย่างต้องใช้ข้อมูลจำลองที่สมจริง
+
+---
+
+# 11. Image and File Architecture
+
+ออกแบบโครงสร้าง Supabase Storage เช่น
+
+```text
+cmms-private/
+├── repair-requests/
+│   └── {ticket_id}/
+│       ├── before/
+│       ├── during/
+│       └── after/
+├── assets/
+│   └── {asset_id}/
+├── work-orders/
+│   └── {work_order_id}/
+└── documents/
+    └── {work_order_id}/
+```
+
+อธิบายเรื่องต่อไปนี้อย่างละเอียด
+
+- ทำไมไม่ควรเก็บ Image Binary ใน Database
+- Signed URL คืออะไร
+- Public URL กับ Signed URL ต่างกันอย่างไร
+- วิธีตั้งชื่อไฟล์ไม่ให้ชนกัน
+- วิธีตรวจสอบ MIME Type
+- วิธีจำกัดขนาดไฟล์
+- วิธีบีบอัดภาพก่อน Upload
+- วิธีสร้าง Thumbnail
+- วิธีป้องกันผู้ใช้เข้าถึงรูปของผู้อื่น
+- วิธีลบรูปเมื่อ Ticket ถูกลบ
+- วิธีจัดการ Orphan Files
+- วิธีจัดการ Network หลุดระหว่าง Upload
+
+---
+
+# 12. Power BI Data Model
+
+ออกแบบ Star Schema โดยมีตารางตัวอย่างดังนี้
+
+## Fact Tables
+
+- FactRepairRequests
+- FactWorkOrders
+- FactRepairCosts
+- FactDowntime
+- FactPartsUsage
+- FactStatusHistory
+
+## Dimension Tables
+
+- DimDate
+- DimAsset
+- DimEquipment
+- DimSite
+- DimLocation
+- DimTechnician
+- DimVendor
+- DimProblemCategory
+- DimPriority
+- DimStatus
+
+สร้าง Diagram และอธิบาย Relationship
+
+สร้าง DAX Measure ตัวอย่าง เช่น
+
+- Total Repair Requests
+- Open Work Orders
+- Closed Work Orders
+- Backlog
+- Average Response Time
+- Average Repair Time
+- SLA Compliance %
+- MTTR
+- MTBF
+- Repeat Failure Rate
+- Total Repair Cost
+- Average Cost per Work Order
+- Downtime Hours
+- Top Failed Assets
+- Work Orders per Technician
+- Before versus After Repair Count
+- Aging 0–7 Days
+- Aging 8–14 Days
+- Aging 15–30 Days
+- Aging Over 30 Days
+
+ทุก Measure ต้องมี
+
+- DAX Code
+- คำอธิบาย
+- Filter Context
+- ตัวอย่างผลลัพธ์
+- ข้อควรระวัง
+
+---
+
+# 13. Final Project Requirements
+
+สร้าง Final Project แบบ End-to-End โดยให้ผู้เรียนพัฒนาระบบตามลำดับดังนี้
+
+1. วิเคราะห์ Requirement
+2. สร้าง User Story
+3. กำหนด Role
+4. ออกแบบ Workflow
+5. ออกแบบ ER Diagram
+6. สร้าง PostgreSQL Database
+7. สร้าง Supabase Project
+8. สร้าง Tables และ Relationships
+9. สร้าง Authentication
+10. สร้าง RLS
+11. สร้าง Storage
+12. สร้าง API Test
+13. สร้าง Power Apps
+14. สร้าง Power Automate
+15. เชื่อม Power Apps กับ Supabase
+16. ทดสอบระบบ
+17. สร้าง Power BI Dashboard
+18. จัดทำ Deployment
+19. จัดทำ User Manual
+20. จัดทำ Admin Manual
+21. จัดทำ Backup and Restore Guide
+22. จัดทำ Production Checklist
+
+Final Project ต้องมีเอกสารดังนี้
+
+- Business Requirement Document
+- Functional Requirement
+- Non-Functional Requirement
+- User Stories
+- Acceptance Criteria
+- Architecture Diagram
+- Data Flow Diagram
+- ER Diagram
+- Data Dictionary
+- API Specification
+- Security Design
+- RLS Matrix
+- Test Plan
+- Test Cases
+- UAT Checklist
+- Deployment Guide
+- Rollback Guide
+- User Manual
+- Administrator Manual
+- Troubleshooting Guide
+
+---
+
+# 14. GitHub Repository Structure
+
+สร้าง Repository ตามโครงสร้างตัวอย่างดังนี้
+
+```text
+cmms-learning-roadmap/
+├── README.md
+├── LICENSE
+├── CONTRIBUTING.md
+├── CHANGELOG.md
+├── SECURITY.md
+├── CODE_OF_CONDUCT.md
+├── package.json
+├── docs/
+│   ├── index.md
+│   ├── introduction/
+│   ├── week-01/
+│   ├── week-02/
+│   ├── week-03/
+│   ├── week-04/
+│   ├── week-05/
+│   ├── week-06/
+│   ├── week-07/
+│   ├── week-08/
+│   ├── week-09/
+│   ├── week-10/
+│   ├── week-11/
+│   ├── week-12/
+│   ├── architecture/
+│   ├── database/
+│   ├── supabase/
+│   ├── power-apps/
+│   ├── power-automate/
+│   ├── power-bi/
+│   ├── api/
+│   ├── security/
+│   ├── deployment/
+│   ├── troubleshooting/
+│   └── glossary/
+├── database/
+│   ├── migrations/
+│   ├── seed/
+│   ├── views/
+│   ├── functions/
+│   ├── triggers/
+│   ├── policies/
+│   └── tests/
+├── api/
+│   ├── examples/
+│   ├── postman/
+│   └── schemas/
+├── power-apps/
+│   ├── screens/
+│   ├── formulas/
+│   ├── components/
+│   └── custom-connector/
+├── power-automate/
+│   ├── flows/
+│   └── expressions/
+├── power-bi/
+│   ├── data-model/
+│   ├── dax/
+│   └── power-query/
+├── diagrams/
+│   ├── architecture/
+│   ├── er-diagram/
+│   ├── workflows/
+│   └── data-flow/
+├── sample-data/
+├── exercises/
+├── solutions/
+├── assets/
+│   ├── images/
+│   └── icons/
+└── .github/
+    ├── workflows/
+    ├── ISSUE_TEMPLATE/
+    └── PULL_REQUEST_TEMPLATE.md
+```
+
+สร้าง README.md ที่มีเนื้อหาอย่างน้อยดังนี้
+
+- Project Overview
+- Target Learner
+- Learning Outcomes
+- Curriculum Overview
+- Technology Stack
+- 12-Week Roadmap
+- Repository Structure
+- Getting Started
+- Prerequisites
+- Installation
+- Running Locally
+- Deploying
+- Offline Reading
+- Final Project
+- Contribution
+- License
+- Disclaimer
+
+---
+
+# 15. Documentation Website
+
+เลือกใช้ Documentation Framework ที่เหมาะสำหรับผู้เริ่มต้นและใช้งานแบบ Offline ได้
+
+พิจารณาตัวเลือก:
+
+- VitePress
+- Docusaurus
+- MkDocs Material
+
+ให้เลือกหนึ่งตัวเลือกเป็น Default พร้อมอธิบายเหตุผล
+
+ข้อกำหนด:
+
+- ติดตั้งง่าย
+- เปิด Local ได้
+- Deploy GitHub Pages ได้
+- มี Search
+- มี Sidebar
+- มี Table of Contents
+- รองรับ Mermaid
+- รองรับ Code Highlighting
+- Responsive
+- รองรับภาษาไทย
+- Build เป็น Static Files ได้
+- ดาวน์โหลดเก็บไว้อ่าน Offline ได้
+
+ให้สร้างไฟล์ Configuration ที่ใช้งานได้จริง
+
+ตัวอย่างคำสั่งที่ต้องมี:
+
+```bash
+npm install
+npm run dev
+npm run build
+npm run preview
+```
+
+หากเลือก MkDocs ให้ใช้คำสั่งที่เหมาะสมกับ Python แทน
+
+---
+
+# 16. Deployment Guide
+
+จัดทำคู่มือ Deploy แบบ Step-by-Step สำหรับอย่างน้อยสามแนวทาง
+
+## 16.1 GitHub Pages
+
+อธิบายตั้งแต่
+
+1. สร้าง Repository
+2. Clone Repository
+3. ติดตั้ง Dependencies
+4. Run Local
+5. Commit
+6. Push
+7. สร้าง GitHub Actions
+8. เปิด GitHub Pages
+9. ตรวจสอบ URL
+10. แก้ปัญหา Base Path
+11. แก้ปัญหา 404
+12. อัปเดตเว็บไซต์ในอนาคต
+
+## 16.2 Netlify
+
+อธิบาย
+
+- Import from GitHub
+- Build Command
+- Publish Directory
+- Environment Variable
+- Deploy Preview
+- Production Deploy
+
+## 16.3 Vercel
+
+อธิบาย
+
+- Import Repository
+- Framework Detection
+- Build Settings
+- Environment Variables
+- Production Deployment
+- Redeploy
+
+สร้าง GitHub Actions Workflow ที่พร้อมใช้งานจริง
+
+---
+
+# 17. Offline Reading
+
+เสนอวิธีอ่านแบบ Offline อย่างน้อยดังนี้
+
+- Build Static Site แล้วเก็บโฟลเดอร์ dist
+- เปิดผ่าน Local HTTP Server
+- Export เอกสารเป็น PDF
+- ใช้ Progressive Web App เมื่อเหมาะสม
+- Save Repository ลงเครื่อง
+- เปิด Markdown ผ่าน VS Code
+- เปิดบน iPad หรือ iPhone
+- เก็บเอกสารใน OneDrive
+- นำ PDF เข้า OneNote หรือ GoodNotes
+
+อธิบายข้อจำกัดของการเปิดไฟล์ HTML โดยตรงด้วย `file://`
+
+สร้าง Script สำหรับเปิดเว็บไซต์ Local บน Windows เช่น
+
+```bat
+@echo off
+cd /d "%~dp0"
+python -m http.server 8080
+```
+
+และ PowerShell:
+
+```powershell
+Set-Location $PSScriptRoot
+python -m http.server 8080
+```
+
+---
+
+# 18. รูปแบบการเขียนเนื้อหา
+
+ใช้ภาษาไทยที่อ่านง่าย แต่มีความถูกต้องทางเทคนิค
+
+ทุกบทต้องมีโครงสร้างดังนี้
+
+```markdown
+# ชื่อบท
+
+## บทนี้จะได้เรียนรู้อะไร
+
+## ปัญหาที่ต้องการแก้
+
+## แนวคิดพื้นฐาน
+
+## Architecture
+
+## Step-by-Step
+
+## ตัวอย่าง Code
+
+## Use Case จริง
+
+## แบบฝึกหัด
+
+## Mini Project
+
+## Common Mistakes
+
+## Best Practices
+
+## Troubleshooting
+
+## Checklist
+
+## สรุป
+
+## คำถามทบทวน
+```
+
+ข้อกำหนดเพิ่มเติม:
+
+- ห้ามอธิบายสั้นเกินไป
+- ห้ามให้เฉพาะหัวข้อโดยไม่มีเนื้อหา
+- Code ต้องใช้งานได้จริง
+- SQL ต้องมี Comment
+- Formula ต้องอธิบาย
+- Mermaid Diagram ต้อง Render ได้
+- Table ต้องอ่านง่าย
+- มี Callout เช่น Note, Warning, Tip และ Danger
+- ระบุจุดที่เกี่ยวข้องกับ Security อย่างชัดเจน
+- แยก Development และ Production
+- ระบุข้อจำกัดของแต่ละ Technology
+- หลีกเลี่ยงการกล่าวอ้างว่าแนวทางเดียวเหมาะกับทุกองค์กร
+
+---
+
+# 19. Use Case Catalog
+
+สร้างบทเฉพาะสำหรับ Use Case อย่างน้อย 15 กรณี ได้แก่
+
+1. แจ้งซ่อมอุปกรณ์ไฟฟ้า
+2. แจ้งซ่อมผ่าน Mobile
+3. ถ่ายรูป Before Repair
+4. Assign Technician
+5. Technician รับงาน
+6. บันทึกผลการตรวจสอบ
+7. รออะไหล่
+8. ส่งงานให้ Vendor
+9. อัปโหลดรูป During Repair
+10. อัปโหลดรูป After Repair
+11. Supervisor ตรวจรับ
+12. ปิด Work Order
+13. ค้นหาประวัติ Asset
+14. ตรวจสอบ Asset ที่เสียซ้ำ
+15. วิเคราะห์ SLA และ Backlog
+16. ตรวจสอบค่าใช้จ่ายตาม Site
+17. ตรวจสอบงานตาม Technician
+18. ตรวจสอบงานตาม Vendor
+19. แจ้งเตือน Warranty ใกล้หมด
+20. วิเคราะห์ MTTR และ MTBF
+
+ทุก Use Case ต้องมี
+
+- Actor
+- Preconditions
+- Trigger
+- Main Flow
+- Alternative Flow
+- Exception Flow
+- Business Rules
+- Data Used
+- Security
+- Acceptance Criteria
+- KPI
+
+---
+
+# 20. Testing Requirements
+
+สร้าง Test Case ครอบคลุมอย่างน้อย
+
+- Create Ticket
+- Required Field Validation
+- Invalid Data Type
+- Duplicate Ticket
+- Unauthorized Access
+- Technician Assignment
+- Status Transition
+- Photo Upload
+- Invalid File Type
+- File Size Exceeded
+- Search
+- Pagination
+- RLS
+- API Authentication
+- Token Expired
+- Network Failure
+- Duplicate Submission
+- SLA Calculation
+- Work Order Closure
+- Power BI Refresh
+- Backup Restore
+
+จัดทำ Test Case Table เช่น
+
+| Test ID | Scenario | Preconditions | Steps | Expected Result | Actual Result | Status |
+|---|---|---|---|---|---|---|
+
+---
+
+# 21. Security Requirements
+
+อธิบาย Security อย่างละเอียด โดยครอบคลุม
+
+- Principle of Least Privilege
+- Authentication
+- Authorization
+- RLS
+- JWT
+- Secret Management
+- API Key Management
+- Service Role Protection
+- Storage Security
+- Input Validation
+- SQL Injection
+- File Upload Security
+- Malware Consideration
+- Logging
+- Audit Trail
+- Session Expiration
+- Backup Encryption
+- HTTPS
+- CORS
+- Rate Limiting
+- Personal Data Protection
+- PDPA Considerations
+
+สร้าง Security Checklist สำหรับก่อนขึ้น Production
+
+---
+
+# 22. Architecture Comparison
+
+สร้างตารางเปรียบเทียบอย่างน้อยสาม Architecture
+
+## Architecture A
+
+Power Apps + SharePoint + Power Automate
+
+## Architecture B
+
+Power Apps + Power Automate + Supabase
+
+## Architecture C
+
+Custom Web/Mobile App + Supabase + Power BI
+
+เปรียบเทียบหัวข้อต่อไปนี้
+
+- ความง่ายในการเริ่มต้น
+- ความเร็วในการพัฒนา
+- ค่าใช้จ่าย
+- Scalability
+- Security
+- Offline Support
+- File Management
+- Reporting
+- Integration
+- Vendor Lock-in
+- Maintenance Complexity
+- เหมาะกับจำนวนผู้ใช้
+- เหมาะกับองค์กรประเภทใด
+
+สรุปว่า Architecture ใดเหมาะกับ
+
+- Prototype
+- Department-Level Application
+- Enterprise Production
+- Low-Budget Project
+- High-Security Project
+- Mobile Field Work
+
+---
+
+# 23. Learning Assessment
+
+เมื่อจบแต่ละสัปดาห์ ให้มี
+
+- Knowledge Check
+- Quiz อย่างน้อย 10 ข้อ
+- Lab Checklist
+- Self-Assessment
+- Review Questions
+- Practical Assignment
+
+เมื่อจบ 12 สัปดาห์ ให้มี Capstone Assessment ประกอบด้วย
+
+- Architecture Review
+- Database Review
+- Security Review
+- Application Demo
+- API Test
+- Power BI Dashboard
+- Documentation Review
+- Production Readiness Checklist
+
+---
+
+# 24. Glossary
+
+สร้าง Glossary ภาษาไทย–อังกฤษ สำหรับคำศัพท์สำคัญ เช่น
+
+- API
+- REST
+- JSON
+- Database
+- Table
+- Primary Key
+- Foreign Key
+- Constraint
+- Index
+- View
+- Trigger
+- Function
+- Authentication
+- Authorization
+- JWT
+- RLS
+- Storage Bucket
+- Signed URL
+- Environment Variable
+- SLA
+- MTTR
+- MTBF
+- Downtime
+- Work Order
+- Asset
+- Equipment
+- Functional Location
+- Audit Log
+- Soft Delete
+- Pagination
+
+---
+
+# 25. วิธีดำเนินงานของ Codex
+
+ให้ดำเนินงานตามลำดับต่อไปนี้
+
+## ขั้นตอนที่ 1: วิเคราะห์และวางโครงสร้าง
+
+- วิเคราะห์ Requirement ทั้งหมด
+- สรุป Architecture
+- สร้าง Repository Structure
+- สร้าง Curriculum 12 สัปดาห์
+- สร้างสารบัญทั้งหมด
+- ระบุ Dependencies
+
+## ขั้นตอนที่ 2: สร้าง Documentation Framework
+
+- Initialize Project
+- ติดตั้ง Dependencies
+- ตั้งค่า Navigation
+- ตั้งค่า Sidebar
+- ตั้งค่า Mermaid
+- ตั้งค่า Search
+- ตั้งค่า Theme
+- ตั้งค่าภาษาไทย
+
+## ขั้นตอนที่ 3: สร้างเนื้อหาหลัก
+
+- สร้างบทเรียนทุกสัปดาห์
+- สร้าง Lab
+- สร้าง Mini Project
+- สร้าง Quiz
+- สร้าง Checklist
+- สร้าง Troubleshooting
+
+## ขั้นตอนที่ 4: สร้าง Database Assets
+
+- ER Diagram
+- Data Dictionary
+- Migration
+- Seed Data
+- Functions
+- Triggers
+- RLS Policies
+- Test SQL
+
+## ขั้นตอนที่ 5: สร้าง Integration Assets
+
+- API Examples
+- Postman Collection
+- Power Apps Formula
+- Power Automate Flow Design
+- Custom Connector Definition
+
+## ขั้นตอนที่ 6: สร้าง Power BI Assets
+
+- Star Schema
+- Power Query
+- DAX Measures
+- Dashboard Specification
+- KPI Definition
+
+## ขั้นตอนที่ 7: สร้าง Deployment
+
+- GitHub Actions
+- GitHub Pages
+- Netlify
+- Vercel
+- Local Offline Script
+
+## ขั้นตอนที่ 8: ตรวจสอบคุณภาพ
+
+ตรวจสอบว่า
+
+- Link ไม่เสีย
+- Mermaid Render ได้
+- Code Block ถูกต้อง
+- SQL Syntax ถูกต้อง
+- Sidebar ครบ
+- Build ผ่าน
+- Mobile Responsive
+- README ครบ
+- ไม่มี Secret ใน Repository
+- ไม่มี Service Role Key ใน Source Code
+- มี `.env.example`
+- มี `.gitignore`
+
+---
+
+# 26. กฎการสร้างไฟล์
+
+ห้ามสร้างเฉพาะ Outline หรือ Placeholder
+
+ห้ามใช้ข้อความลักษณะต่อไปนี้เป็นเนื้อหาหลัก:
+
+- TODO
+- Coming Soon
+- Add content here
+- To be completed
+- Placeholder
+
+ทุกไฟล์ที่สร้างต้องมีเนื้อหาที่ใช้งานได้จริง
+
+เมื่อเนื้อหามีจำนวนมาก ให้สร้างงานเป็นลำดับ Batch แต่ต้องรักษาโครงสร้างและสารบัญให้ต่อเนื่อง
+
+ทุกครั้งที่สร้างหรือแก้ไขไฟล์ ให้สรุป:
+
+1. ไฟล์ที่สร้าง
+2. ไฟล์ที่แก้ไข
+3. เนื้อหาที่เพิ่ม
+4. คำสั่งที่ต้อง Run
+5. ผลการตรวจสอบ
+6. งานส่วนถัดไป
+
+---
+
+# 27. Definition of Done
+
+งานจะถือว่าเสร็จเมื่อมีองค์ประกอบครบดังนี้
+
+- เว็บไซต์ Documentation เปิดใช้งาน Local ได้
+- Build Production ผ่าน
+- Deploy GitHub Pages ได้
+- มี Curriculum 12 สัปดาห์ครบ
+- มีบทเรียน Beginner ถึง Advanced
+- มี Phase 1–8 ครบ
+- มี Hands-on Lab ทุก Phase
+- มี Mini Project ทุก Phase
+- มี Final Project
+- มี Use Case อย่างน้อย 15 กรณี
+- มี ER Diagram
+- มี Architecture Diagram
+- มี Database Migration
+- มี Seed Data
+- มี RLS Policy
+- มี API Examples
+- มี Power Apps Formula
+- มี Power Automate Flow Design
+- มี Power BI Star Schema
+- มี DAX Measures
+- มี Security Checklist
+- มี Test Cases
+- มี Deployment Guide
+- มี Offline Guide
+- มี Troubleshooting Guide
+- มี Glossary
+- README.md สมบูรณ์
+- ไม่มี Secret Key ใน GitHub
+- Repository พร้อมนำไปพัฒนาต่อ
+
+---
+
+# 28. คำสั่งเริ่มต้น
+
+เริ่มดำเนินงานทันทีโดยทำตามลำดับนี้
+
+1. ตรวจสอบไฟล์และโครงสร้าง Repository ปัจจุบัน
+2. สรุป Architecture ที่แนะนำ
+3. เลือก Documentation Framework ที่เหมาะสม
+4. สร้าง Repository Structure
+5. สร้าง README.md
+6. สร้าง Curriculum 12 สัปดาห์
+7. สร้างหน้า Introduction
+8. สร้างบทเรียนสัปดาห์ที่ 1
+9. สร้าง GitHub Pages Deployment
+10. Run Build และแก้ Error จน Build ผ่าน
+
+ไม่ต้องถามยืนยันในแต่ละขั้นตอน
+
+หากพบข้อมูลที่ยังไม่ได้กำหนด ให้เลือกค่าที่เหมาะสมสำหรับระบบตัวอย่าง และบันทึกสมมติฐานไว้ในไฟล์:
+
+```text
+docs/architecture/assumptions.md
+```
+
+หลังดำเนินงานแต่ละรอบ ให้รายงานผลในรูปแบบ:
+
+```markdown
+## สรุปการดำเนินงาน
+
+### ไฟล์ที่สร้าง
+- ...
+
+### ไฟล์ที่แก้ไข
+- ...
+
+### คำสั่งที่ใช้
+
+```bash
+...
+```
+
+### ผลการตรวจสอบ
+- Development server:
+- Production build:
+- Broken links:
+- Mermaid:
+- Security check:
+
+### งานที่ยังเหลือ
+- ...
+```
+
+เริ่มสร้างโครงการ CMMS Learning Roadmap และ Documentation Website ตาม Requirement ทั้งหมดนี้ทันที
