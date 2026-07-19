@@ -1,0 +1,13 @@
+### List tickets; use a user access token, never service_role in a client.
+GET {{$dotenv SUPABASE_URL}}/rest/v1/tickets?select=*&status=eq.in_progress&limit=20
+apikey: {{$dotenv SUPABASE_ANON_KEY}}
+Authorization: Bearer {{$dotenv SUPABASE_ACCESS_TOKEN}}
+
+### Create ticket
+POST {{$dotenv SUPABASE_URL}}/rest/v1/tickets
+apikey: {{$dotenv SUPABASE_ANON_KEY}}
+Authorization: Bearer {{$dotenv SUPABASE_ACCESS_TOKEN}}
+Content-Type: application/json
+Prefer: return=representation
+
+{"ticket_number":"T-DEMO-0001","reporter_id":"00000000-0000-0000-0000-000000000001","site_id":"00000000-0000-0000-0000-000000000002","problem_category":"electrical","description":"MDB temperature alarm","priority":"critical"}

@@ -1,0 +1,7 @@
+Total Repair Requests = COUNTROWS('Fact Work Order')
+Open Work Orders = CALCULATE([Total Repair Requests], 'Fact Work Order'[Status] IN {"new", "submitted", "assigned", "in_progress"})
+Closed Work Orders = CALCULATE([Total Repair Requests], 'Fact Work Order'[Status] = "closed")
+Backlog = [Total Repair Requests] - [Closed Work Orders]
+SLA Compliance % = DIVIDE(CALCULATE([Total Repair Requests], 'Fact Work Order'[SLA Met] = TRUE()), [Total Repair Requests])
+MTTR Hours = AVERAGEX(FILTER('Fact Work Order', NOT ISBLANK('Fact Work Order'[Completed At])), DATEDIFF('Fact Work Order'[Started At], 'Fact Work Order'[Completed At], HOUR))
+Total Repair Cost = SUM('Fact Work Order'[Repair Cost])

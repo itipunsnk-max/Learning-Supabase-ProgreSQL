@@ -1,0 +1,33 @@
+openapi: 3.0.1
+info:
+  title: CMMS Integration API
+  version: 1.0.0
+servers:
+  - url: https://example.invalid/api
+paths:
+  /tickets:
+    post:
+      operationId: CreateTicket
+      summary: Create a repair ticket
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TicketRequest'
+      responses:
+        '201': {description: Created}
+        '400': {description: Validation error}
+        '401': {description: Unauthorized}
+components:
+  securitySchemes:
+    bearerAuth: {type: http, scheme: bearer}
+  schemas:
+    TicketRequest:
+      type: object
+      required: [site_id, description, priority]
+      properties:
+        site_id: {type: string, format: uuid}
+        asset_id: {type: string, format: uuid}
+        description: {type: string}
+        priority: {type: string, enum: [low, normal, urgent, critical]}

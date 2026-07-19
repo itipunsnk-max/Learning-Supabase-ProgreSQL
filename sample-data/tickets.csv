@@ -1,0 +1,3 @@
+ticket_number,site_code,asset_code,priority,status,problem_category
+T-DEMO-0001,SITE-A,AST-MDB-001,critical,submitted,electrical
+T-DEMO-0002,SITE-A,AST-MDB-001,normal,in_progress,temperature

@@ -1,0 +1,8 @@
+erDiagram
+  PROFILES ||--o{ TICKETS : reports
+  SITES ||--o{ ASSETS : contains
+  SITES ||--o{ TICKETS : receives
+  ASSETS ||--o{ TICKETS : concerns
+  TICKETS ||--|| WORK_ORDERS : creates
+  TICKETS ||--o{ STATUS_HISTORY : records
+  TICKETS ||--o{ REPAIR_PHOTOS : documents

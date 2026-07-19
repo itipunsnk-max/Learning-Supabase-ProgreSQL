@@ -1,0 +1,7 @@
+flowchart LR
+  User[Mobile User] --> App[Power Apps]
+  App --> Flow[Power Automate]
+  Flow --> API[Controlled API]
+  API --> DB[(Supabase PostgreSQL)]
+  API --> Storage[Private Storage]
+  DB --> BI[Power BI]

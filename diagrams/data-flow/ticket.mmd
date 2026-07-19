@@ -1,0 +1,7 @@
+flowchart TD
+  A[Reporter input] --> B[Client validation]
+  B --> C[Authenticated API]
+  C --> D[RLS + database constraints]
+  D --> E[Ticket and history]
+  E --> F[Notification]
+  E --> G[Reporting view]

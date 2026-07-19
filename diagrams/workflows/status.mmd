@@ -1,0 +1,13 @@
+stateDiagram-v2
+  [*] --> New
+  New --> Submitted
+  Submitted --> Assigned
+  Assigned --> Accepted
+  Accepted --> InProgress
+  InProgress --> WaitingMaterial
+  InProgress --> WaitingVendor
+  InProgress --> Completed
+  Completed --> Verified
+  Verified --> Closed
+  New --> Cancelled
+  Submitted --> Cancelled

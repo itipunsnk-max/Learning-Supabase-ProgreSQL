@@ -1,0 +1,11 @@
+alter table public.profiles enable row level security;
+alter table public.sites enable row level security;
+alter table public.assets enable row level security;
+alter table public.tickets enable row level security;
+alter table public.work_orders enable row level security;
+alter table public.status_history enable row level security;
+alter table public.repair_photos enable row level security;
+create policy "authenticated users read sites" on public.sites for select to authenticated using (true);
+create policy "authenticated users read assets" on public.assets for select to authenticated using (deleted_at is null);
+create policy "requesters create tickets" on public.tickets for insert to authenticated with check (reporter_id = auth.uid());
+create policy "users read own or assigned tickets" on public.tickets for select to authenticated using (reporter_id = auth.uid() or exists (select 1 from public.work_orders w where w.ticket_id = tickets.id and w.assignee_id = auth.uid()));

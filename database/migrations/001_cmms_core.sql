@@ -1,0 +1,16 @@
+-- CMMS core schema for PostgreSQL/Supabase.
+create extension if not exists pgcrypto;
+create type public.app_role as enum ('requester', 'technician', 'supervisor', 'manager', 'admin');
+create type public.work_order_status as enum ('new', 'submitted', 'assigned', 'accepted', 'in_progress', 'waiting_material', 'waiting_vendor', 'waiting_approval', 'completed', 'verified', 'closed', 'cancelled');
+create type public.photo_type as enum ('before', 'during', 'after');
+
+create table public.profiles (id uuid primary key references auth.users(id) on delete cascade, display_name text not null, department text, role public.app_role not null default 'requester', created_at timestamptz not null default now());
+create table public.sites (id uuid primary key default gen_random_uuid(), code text unique not null, name text not null);
+create table public.assets (id uuid primary key default gen_random_uuid(), site_id uuid not null references public.sites(id), asset_code text unique not null, equipment_number text, description text not null, manufacturer text, model text, serial_number text, installation_date date, warranty_expiry date, criticality smallint not null default 3 check (criticality between 1 and 5), current_status text not null default 'active', deleted_at timestamptz);
+create table public.tickets (id uuid primary key default gen_random_uuid(), ticket_number text unique not null, reporter_id uuid not null references public.profiles(id), site_id uuid not null references public.sites(id), asset_id uuid references public.assets(id), problem_category text not null, description text not null, priority text not null check (priority in ('low','normal','urgent','critical')), impact text, status public.work_order_status not null default 'new', due_at timestamptz, reported_at timestamptz not null default now(), closed_at timestamptz, deleted_at timestamptz);
+create table public.work_orders (id uuid primary key default gen_random_uuid(), ticket_id uuid unique not null references public.tickets(id), assignee_id uuid references public.profiles(id), vendor_name text, repair_result text, accepted_at timestamptz, started_at timestamptz, completed_at timestamptz, verified_at timestamptz);
+create table public.status_history (id bigint generated always as identity primary key, ticket_id uuid not null references public.tickets(id), from_status public.work_order_status, to_status public.work_order_status not null, changed_by uuid not null references public.profiles(id), changed_at timestamptz not null default now(), note text);
+create table public.repair_photos (id uuid primary key default gen_random_uuid(), ticket_id uuid not null references public.tickets(id), work_order_id uuid references public.work_orders(id), photo_type public.photo_type not null, object_path text not null unique, file_name text not null, mime_type text not null, file_size bigint not null check (file_size > 0 and file_size <= 10485760), caption text, latitude numeric(9,6), longitude numeric(9,6), uploaded_by uuid not null references public.profiles(id), uploaded_at timestamptz not null default now());
+create index tickets_search_idx on public.tickets (site_id, status, reported_at desc);
+create index assets_site_idx on public.assets (site_id, current_status);
+create index status_history_ticket_idx on public.status_history (ticket_id, changed_at desc);
